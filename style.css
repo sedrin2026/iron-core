@@ -1,33 +1,26 @@
+/* 最新版 style.css
+   ※ GitHubのstyle.cssを全部これに置き換え
+*/
+
 :root {
   --bg: #070a0f;
   --bg-2: #0c1118;
   --panel: #101720;
   --panel-2: #141d28;
-
   --line: rgba(255, 255, 255, 0.08);
   --line-strong: rgba(255, 255, 255, 0.15);
-
   --text: #f4f7fb;
   --muted: #84909f;
-
   --accent: #00e5ff;
   --accent-2: #00a8ff;
   --success: #38f29a;
   --danger: #ff4d67;
   --warning: #ffc857;
-
-  --shadow:
-    0 15px 40px rgba(0, 0, 0, 0.35);
-
+  --shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
   --radius: 18px;
   --radius-small: 12px;
-
   --nav-height: 76px;
 }
-
-/* =========================================================
-   RESET
-========================================================= */
 
 * {
   box-sizing: border-box;
@@ -62,9 +55,7 @@ body {
       transparent 30%
     ),
     var(--bg);
-
   color: var(--text);
-
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -90,16 +81,11 @@ input {
   display: none !important;
 }
 
-/* =========================================================
-   APP
-========================================================= */
-
 #app {
   width: 100%;
   min-height: 100vh;
   max-width: 720px;
   margin: 0 auto;
-
   padding-bottom:
     calc(
       var(--nav-height) +
@@ -107,29 +93,15 @@ input {
     );
 }
 
-/* =========================================================
-   HEADER
-========================================================= */
-
 .app-header {
   height: 74px;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
-
-  padding:
-    0 18px;
-
-  border-bottom:
-    1px solid var(--line);
-
-  background:
-    rgba(7, 10, 15, 0.82);
-
-  backdrop-filter:
-    blur(18px);
-
+  padding: 0 18px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(7, 10, 15, 0.82);
+  backdrop-filter: blur(18px);
   position: sticky;
   top: 0;
   z-index: 50;
@@ -144,24 +116,18 @@ input {
 .brand-mark {
   width: 42px;
   height: 42px;
-
   display: grid;
   place-items: center;
-
   border-radius: 12px;
-
   color: #001116;
-
   font-size: 14px;
   font-weight: 900;
-
   background:
     linear-gradient(
       135deg,
       var(--accent),
       var(--accent-2)
     );
-
   box-shadow:
     0 0 22px
     rgba(0, 229, 255, 0.25);
@@ -187,22 +153,12 @@ input {
 .icon-button {
   width: 42px;
   height: 42px;
-
   border-radius: 12px;
-
   background: var(--panel);
-
-  border:
-    1px solid var(--line);
-
+  border: 1px solid var(--line);
   color: var(--text);
-
   font-size: 19px;
 }
-
-/* =========================================================
-   MAIN
-========================================================= */
 
 main {
   padding: 22px 16px 30px;
@@ -216,33 +172,23 @@ main {
   display: block;
 }
 
-/* =========================================================
-   WELCOME
-========================================================= */
-
 .welcome-block {
   margin-bottom: 22px;
 }
 
 .eyebrow {
   display: block;
-
   color: var(--accent);
-
   font-size: 9px;
   font-weight: 800;
-
   letter-spacing: 0.22em;
-
   margin-bottom: 7px;
 }
 
 .welcome-block h1 {
   font-size: 36px;
   line-height: 1;
-
   letter-spacing: 0.04em;
-
   margin-bottom: 8px;
 }
 
@@ -251,53 +197,37 @@ main {
   font-size: 13px;
 }
 
-/* =========================================================
-   HERO CARD
-========================================================= */
-
 .hero-card {
   position: relative;
-
   overflow: hidden;
-
   padding: 20px;
-
   border-radius: var(--radius);
-
   background:
     linear-gradient(
       145deg,
       rgba(0, 229, 255, 0.09),
       rgba(20, 29, 40, 0.98)
     );
-
   border:
     1px solid
     rgba(0, 229, 255, 0.18);
-
   box-shadow: var(--shadow);
 }
 
 .hero-card::before {
   content: "";
-
   position: absolute;
-
   width: 180px;
   height: 180px;
-
   right: -80px;
   top: -80px;
-
   border-radius: 50%;
-
   background:
     radial-gradient(
       circle,
       rgba(0, 229, 255, 0.17),
       transparent 70%
     );
-
   pointer-events: none;
 }
 
@@ -305,40 +235,30 @@ main {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-
   gap: 12px;
 }
 
 .card-label {
   color: var(--muted);
-
   font-size: 9px;
   font-weight: 700;
-
   letter-spacing: 0.17em;
 }
 
 .hero-card h2 {
   margin-top: 7px;
-
   font-size: 22px;
   letter-spacing: 0.03em;
 }
 
 .status-badge {
   padding: 6px 9px;
-
   border-radius: 999px;
-
   color: var(--accent);
-
-  background:
-    rgba(0, 229, 255, 0.08);
-
+  background: rgba(0, 229, 255, 0.08);
   border:
     1px solid
     rgba(0, 229, 255, 0.18);
-
   font-size: 9px;
   font-weight: 800;
 }
@@ -346,70 +266,45 @@ main {
 .workout-summary {
   display: grid;
   grid-template-columns: 1fr 1fr;
-
   gap: 10px;
-
-  margin:
-    22px 0 18px;
+  margin: 22px 0 18px;
 }
 
 .workout-summary > div {
   padding: 13px;
-
   border-radius: 12px;
-
-  background:
-    rgba(0, 0, 0, 0.18);
-
-  border:
-    1px solid var(--line);
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid var(--line);
 }
 
 .workout-summary strong {
   display: block;
-
   font-size: 22px;
 }
 
 .workout-summary span {
   color: var(--muted);
-
   font-size: 9px;
-
   letter-spacing: 0.12em;
 }
 
-/* =========================================================
-   BUTTONS
-========================================================= */
-
 .primary-button {
   width: 100%;
-
   min-height: 52px;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
-
-  padding:
-    0 17px;
-
+  padding: 0 17px;
   border-radius: 13px;
-
   background:
     linear-gradient(
       135deg,
       var(--accent),
       var(--accent-2)
     );
-
   color: #001116;
-
   font-weight: 900;
-
   letter-spacing: 0.08em;
-
   box-shadow:
     0 8px 25px
     rgba(0, 229, 255, 0.16);
@@ -417,103 +312,64 @@ main {
 
 .secondary-button {
   width: 100%;
-
   min-height: 50px;
-
   margin-top: 15px;
-
   border-radius: 13px;
-
   color: var(--accent);
-
   background: var(--panel);
-
   border:
     1px solid
     rgba(0, 229, 255, 0.18);
-
   font-weight: 800;
 }
 
 .danger-button {
   padding: 9px 13px;
-
   border-radius: 10px;
-
   color: var(--danger);
-
   background:
     rgba(255, 77, 103, 0.08);
-
   border:
     1px solid
     rgba(255, 77, 103, 0.2);
-
   font-size: 10px;
   font-weight: 800;
 }
 
 .text-button {
   background: transparent;
-
   color: var(--accent);
-
   font-size: 10px;
   font-weight: 800;
-
   letter-spacing: 0.08em;
 }
-
-/* =========================================================
-   SECTION TITLE
-========================================================= */
 
 .section-title {
   display: flex;
   justify-content: space-between;
   align-items: center;
-
-  margin:
-    27px 2px 11px;
-
+  margin: 27px 2px 11px;
   color: var(--muted);
-
   font-size: 10px;
   font-weight: 800;
-
   letter-spacing: 0.17em;
 }
 
-/* =========================================================
-   STATS GRID
-========================================================= */
-
 .stats-grid {
   display: grid;
-
-  grid-template-columns:
-    repeat(2, 1fr);
-
+  grid-template-columns: repeat(2, 1fr);
   gap: 10px;
 }
 
 .stat-card {
   padding: 15px;
-
   min-height: 118px;
-
   display: flex;
   flex-direction: column;
-
   justify-content: space-between;
-
   border-radius: var(--radius-small);
-
   background: var(--panel);
-
-  border:
-    1px solid var(--line);
-
+  border: 1px solid var(--line);
   box-shadow:
     0 8px 22px
     rgba(0, 0, 0, 0.16);
@@ -530,60 +386,39 @@ main {
 
 .stat-card span:last-child {
   color: var(--muted);
-
   font-size: 8px;
   font-weight: 700;
-
   letter-spacing: 0.12em;
 }
 
-/* =========================================================
-   BODY CARD
-========================================================= */
-
 .body-card {
   display: grid;
-
-  grid-template-columns:
-    repeat(3, 1fr);
-
+  grid-template-columns: repeat(3, 1fr);
   gap: 1px;
-
   overflow: hidden;
-
   border-radius: var(--radius-small);
-
   background: var(--line);
-
-  border:
-    1px solid var(--line);
+  border: 1px solid var(--line);
 }
 
 .body-stat {
   min-height: 110px;
-
   display: flex;
   flex-direction: column;
-
   justify-content: center;
-
   padding: 13px;
-
   background: var(--panel);
 }
 
 .body-stat span {
   color: var(--muted);
-
   font-size: 8px;
   font-weight: 700;
-
   letter-spacing: 0.1em;
 }
 
 .body-stat strong {
   margin-top: 7px;
-
   font-size: 22px;
 }
 
@@ -592,27 +427,17 @@ main {
   font-size: 9px;
 }
 
-/* =========================================================
-   SCREEN HEADER
-========================================================= */
-
 .screen-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-
   margin-bottom: 20px;
 }
 
 .screen-header h2 {
   font-size: 29px;
-
   letter-spacing: 0.04em;
 }
-
-/* =========================================================
-   EXERCISE LIST
-========================================================= */
 
 .exercise-list {
   display: flex;
@@ -622,20 +447,15 @@ main {
 
 .exercise-card {
   padding: 16px;
-
   border-radius: var(--radius);
-
   background: var(--panel);
-
-  border:
-    1px solid var(--line);
+  border: 1px solid var(--line);
 }
 
 .exercise-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-
   margin-bottom: 13px;
 }
 
@@ -648,25 +468,24 @@ main {
 }
 
 /* =========================================================
-   WORKOUT SET AREA
+   WORKOUT
+   見やすい上下間隔
 ========================================================= */
 
 .workout-exercise-card .exercise-card-main {
-  margin-bottom: 14px;
+  margin-bottom: 18px;
 }
 
 .workout-set-area {
-  margin-top: 4px;
+  margin-top: 8px;
 }
 
 .workout-set-row {
   display: flex;
   align-items: baseline;
   gap: 7px;
-
   line-height: 1.35;
-
-  margin-top: 10px;
+  margin-top: 14px;
 }
 
 .workout-set-row:first-child {
@@ -685,25 +504,19 @@ main {
 .workout-input-row {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-
-  margin-top: 16px;
+  gap: 10px;
+  margin-top: 20px;
 }
 
 .workout-weight-input,
 .workout-reps-input {
   width: 100%;
   min-height: 46px;
-
   padding: 0 12px;
-
   border-radius: 10px;
-
   color: var(--text);
   background: var(--bg-2);
-
   border: 1px solid var(--line);
-
   font-size: 16px;
 }
 
@@ -715,112 +528,77 @@ main {
 .workout-weight-input:focus,
 .workout-reps-input:focus {
   border-color: rgba(0, 229, 255, 0.5);
-
   box-shadow:
     0 0 0 3px
     rgba(0, 229, 255, 0.07);
 }
 
 .add-set-button {
-  margin-top: 4px;
+  margin-top: 10px;
 }
-
-/* =========================================================
-   SET ROW
-========================================================= */
 
 .set-row {
   display: grid;
-
-  grid-template-columns:
-    34px 1fr 1fr 48px;
-
+  grid-template-columns: 34px 1fr 1fr 48px;
   gap: 7px;
-
   align-items: center;
-
   margin-top: 7px;
 }
 
 .set-number {
   color: var(--muted);
-
   text-align: center;
-
   font-size: 10px;
 }
 
 .set-input {
   width: 100%;
-
   height: 42px;
-
   padding: 0 9px;
-
   border-radius: 9px;
-
   color: var(--text);
-
   background: var(--bg-2);
-
   border:
     1px solid var(--line);
 }
 
 .set-complete {
   height: 42px;
-
   border-radius: 9px;
-
   color: var(--success);
-
   background:
     rgba(56, 242, 154, 0.08);
-
   border:
     1px solid
     rgba(56, 242, 154, 0.15);
 }
 
 /* =========================================================
-   STATS SCREEN
+   STATS
 ========================================================= */
 
 .stats-overview {
   display: grid;
-
-  grid-template-columns:
-    repeat(2, 1fr);
-
+  grid-template-columns: repeat(2, 1fr);
   gap: 10px;
-
   margin-bottom: 14px;
 }
 
 .large-stat-card {
   padding: 18px;
-
   min-height: 120px;
-
   display: flex;
   flex-direction: column;
-
   justify-content: space-between;
-
   border-radius: var(--radius);
-
   background: var(--panel);
-
-  border:
-    1px solid var(--line);
+  border: 1px solid var(--line);
 }
 
 .large-stat-card span {
   color: var(--muted);
-
   font-size: 9px;
   font-weight: 700;
-
   letter-spacing: 0.13em;
 }
 
@@ -828,42 +606,27 @@ main {
   font-size: 26px;
 }
 
-/* =========================================================
-   CHART
-========================================================= */
-
 .chart-card {
   margin-top: 12px;
-
   padding: 17px;
-
   min-height: 190px;
-
   border-radius: var(--radius);
-
   background: var(--panel);
-
-  border:
-    1px solid var(--line);
+  border: 1px solid var(--line);
 }
 
 .chart-header {
   color: var(--muted);
-
   font-size: 9px;
   font-weight: 800;
-
   letter-spacing: 0.15em;
 }
 
 .chart-placeholder {
   min-height: 130px;
-
   display: grid;
   place-items: center;
-
   color: var(--muted);
-
   font-size: 10px;
 }
 
@@ -874,25 +637,19 @@ main {
 .history-list {
   display: flex;
   flex-direction: column;
-
   gap: 10px;
 }
 
 .history-card {
   padding: 16px;
-
   border-radius: var(--radius);
-
   background: var(--panel);
-
-  border:
-    1px solid var(--line);
+  border: 1px solid var(--line);
 }
 
 .history-card-header {
   display: flex;
   justify-content: space-between;
-
   margin-bottom: 9px;
 }
 
@@ -906,7 +663,6 @@ main {
 
 .history-volume {
   color: var(--accent);
-
   font-size: 11px;
   font-weight: 800;
 }
@@ -917,17 +673,12 @@ main {
 
 .empty-state {
   min-height: 250px;
-
   display: flex;
   flex-direction: column;
-
   align-items: center;
   justify-content: center;
-
   gap: 9px;
-
   text-align: center;
-
   color: var(--muted);
 }
 
@@ -937,15 +688,12 @@ main {
 
 .empty-state strong {
   color: var(--text);
-
   font-size: 13px;
 }
 
 .empty-state span {
   max-width: 280px;
-
   font-size: 11px;
-
   line-height: 1.6;
 }
 
@@ -957,13 +705,9 @@ main {
   display: flex;
   flex-wrap: wrap;
   gap: 7px;
-
   overflow-x: auto;
-
   padding-bottom: 9px;
-
   margin-bottom: 13px;
-
   scrollbar-width: none;
 }
 
@@ -973,28 +717,18 @@ main {
 
 .filter-button {
   flex: 0 0 auto;
-
-  padding:
-    9px 12px;
-
+  padding: 9px 12px;
   border-radius: 999px;
-
   color: var(--muted);
-
   background: var(--panel);
-
-  border:
-    1px solid var(--line);
-
+  border: 1px solid var(--line);
   font-size: 9px;
   font-weight: 800;
 }
 
 .filter-button.active {
   color: #001116;
-
   background: var(--accent);
-
   border-color: var(--accent);
 }
 
@@ -1005,24 +739,17 @@ main {
 .exercise-database-list {
   display: flex;
   flex-direction: column;
-
   gap: 8px;
 }
 
 .exercise-database-item {
   display: flex;
-
   justify-content: space-between;
   align-items: center;
-
   padding: 14px;
-
   border-radius: 13px;
-
   background: var(--panel);
-
-  border:
-    1px solid var(--line);
+  border: 1px solid var(--line);
 }
 
 .exercise-database-item strong {
@@ -1031,28 +758,20 @@ main {
 
 .exercise-database-item span {
   display: block;
-
   margin-top: 4px;
-
   color: var(--muted);
-
   font-size: 9px;
 }
 
 .exercise-database-item button {
   padding: 8px 10px;
-
   border-radius: 8px;
-
   color: var(--accent);
-
   background:
     rgba(0, 229, 255, 0.07);
-
   border:
     1px solid
     rgba(0, 229, 255, 0.15);
-
   font-size: 9px;
 }
 
@@ -1062,54 +781,35 @@ main {
 
 .bottom-nav {
   position: fixed;
-
   left: 0;
   right: 0;
   bottom: 0;
-
   z-index: 100;
-
   max-width: 720px;
-
   margin: 0 auto;
-
   height:
     calc(
       var(--nav-height) +
       env(safe-area-inset-bottom)
     );
-
   padding:
     7px 8px
     env(safe-area-inset-bottom);
-
   display: grid;
-
-  grid-template-columns:
-    repeat(5, 1fr);
-
+  grid-template-columns: repeat(5, 1fr);
   background:
     rgba(7, 10, 15, 0.92);
-
-  backdrop-filter:
-    blur(18px);
-
-  border-top:
-    1px solid var(--line);
+  backdrop-filter: blur(18px);
+  border-top: 1px solid var(--line);
 }
 
 .nav-button {
   display: flex;
-
   flex-direction: column;
-
   align-items: center;
   justify-content: center;
-
   gap: 3px;
-
   color: var(--muted);
-
   background: transparent;
 }
 
@@ -1120,7 +820,6 @@ main {
 .nav-button small {
   font-size: 7px;
   font-weight: 800;
-
   letter-spacing: 0.08em;
 }
 
@@ -1134,51 +833,31 @@ main {
 
 .modal {
   position: fixed;
-
   inset: 0;
-
   z-index: 500;
-
   display: flex;
-
   align-items: flex-end;
-
   justify-content: center;
 }
 
 .modal-backdrop {
   position: absolute;
-
   inset: 0;
-
   background:
     rgba(0, 0, 0, 0.72);
-
-  backdrop-filter:
-    blur(5px);
+  backdrop-filter: blur(5px);
 }
 
 .modal-card {
   position: relative;
-
   width: 100%;
-
   max-width: 720px;
-
   max-height: 88vh;
-
   overflow-y: auto;
-
   padding: 20px;
-
-  border-radius:
-    22px 22px 0 0;
-
+  border-radius: 22px 22px 0 0;
   background: var(--panel-2);
-
-  border:
-    1px solid var(--line);
-
+  border: 1px solid var(--line);
   box-shadow:
     0 -20px 60px
     rgba(0, 0, 0, 0.4);
@@ -1186,10 +865,8 @@ main {
 
 .modal-header {
   display: flex;
-
   align-items: center;
   justify-content: space-between;
-
   margin-bottom: 18px;
 }
 
@@ -1200,11 +877,8 @@ main {
 .modal-header button {
   width: 34px;
   height: 34px;
-
   border-radius: 9px;
-
   color: var(--muted);
-
   background: var(--panel);
 }
 
@@ -1214,40 +888,27 @@ main {
 
 .modal-card label {
   display: block;
-
   margin-bottom: 13px;
-
   color: var(--muted);
-
   font-size: 9px;
   font-weight: 800;
-
   letter-spacing: 0.12em;
 }
 
 .modal-card input {
   width: 100%;
-
   height: 48px;
-
   margin-top: 7px;
-
   padding: 0 13px;
-
   border-radius: 11px;
-
   color: var(--text);
-
   background: var(--bg);
-
-  border:
-    1px solid var(--line);
+  border: 1px solid var(--line);
 }
 
 .modal-card input:focus {
   border-color:
     rgba(0, 229, 255, 0.5);
-
   box-shadow:
     0 0 0 3px
     rgba(0, 229, 255, 0.07);
@@ -1259,29 +920,21 @@ main {
 
 .timer-card {
   padding-top: 30px;
-
   padding-bottom:
     calc(
       25px +
       env(safe-area-inset-bottom)
     );
-
   text-align: center;
 }
 
 .timer-card strong {
   display: block;
-
   margin: 18px 0 25px;
-
   font-size: 64px;
-
   line-height: 1;
-
   letter-spacing: 0.05em;
-
   color: var(--accent);
-
   text-shadow:
     0 0 25px
     rgba(0, 229, 255, 0.25);
@@ -1289,24 +942,16 @@ main {
 
 .timer-actions {
   display: grid;
-
-  grid-template-columns:
-    repeat(3, 1fr);
-
+  grid-template-columns: repeat(3, 1fr);
   gap: 8px;
 }
 
 .timer-actions button {
   height: 46px;
-
   border-radius: 10px;
-
   color: var(--text);
-
   background: var(--panel);
-
-  border:
-    1px solid var(--line);
+  border: 1px solid var(--line);
 }
 
 /* =========================================================
@@ -1314,26 +959,21 @@ main {
 ========================================================= */
 
 @media (min-width: 600px) {
-
   main {
     padding-left: 24px;
     padding-right: 24px;
   }
 
   .stats-grid {
-    grid-template-columns:
-      repeat(4, 1fr);
+    grid-template-columns: repeat(4, 1fr);
   }
 
   .bottom-nav {
-    border-radius:
-      18px 18px 0 0;
+    border-radius: 18px 18px 0 0;
   }
-
 }
 
 @media (max-width: 380px) {
-
   .welcome-block h1 {
     font-size: 31px;
   }
@@ -1349,7 +989,6 @@ main {
   .body-stat strong {
     font-size: 19px;
   }
-
 }
 
 /* =========================================================
@@ -1360,7 +999,6 @@ button:focus-visible,
 input:focus-visible {
   outline:
     2px solid var(--accent);
-
   outline-offset: 2px;
 }
 
@@ -1369,7 +1007,6 @@ input:focus-visible {
 ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
-
   *,
   *::before,
   *::after {
@@ -1377,5 +1014,4 @@ input:focus-visible {
     transition: none !important;
     animation: none !important;
   }
-
 }
