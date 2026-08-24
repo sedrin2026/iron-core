@@ -1,4 +1,3 @@
-
 :root {
   --bg: #070a0f;
   --bg-2: #0c1118;
@@ -649,6 +648,84 @@ main {
 }
 
 /* =========================================================
+   WORKOUT SET AREA
+========================================================= */
+
+.workout-exercise-card .exercise-card-main {
+  margin-bottom: 14px;
+}
+
+.workout-set-area {
+  margin-top: 4px;
+}
+
+.workout-set-row {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+
+  line-height: 1.35;
+
+  margin-top: 10px;
+}
+
+.workout-set-row:first-child {
+  margin-top: 0;
+}
+
+.workout-set-row span {
+  flex: 0 0 auto;
+  color: var(--muted);
+}
+
+.workout-set-row strong {
+  flex: 1 1 auto;
+}
+
+.workout-input-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  margin-top: 16px;
+}
+
+.workout-weight-input,
+.workout-reps-input {
+  width: 100%;
+  min-height: 46px;
+
+  padding: 0 12px;
+
+  border-radius: 10px;
+
+  color: var(--text);
+  background: var(--bg-2);
+
+  border: 1px solid var(--line);
+
+  font-size: 16px;
+}
+
+.workout-weight-input::placeholder,
+.workout-reps-input::placeholder {
+  color: var(--muted);
+}
+
+.workout-weight-input:focus,
+.workout-reps-input:focus {
+  border-color: rgba(0, 229, 255, 0.5);
+
+  box-shadow:
+    0 0 0 3px
+    rgba(0, 229, 255, 0.07);
+}
+
+.add-set-button {
+  margin-top: 4px;
+}
+
+/* =========================================================
    SET ROW
 ========================================================= */
 
@@ -878,7 +955,7 @@ main {
 
 .exercise-filter {
   display: flex;
-flex-wrap: wrap;
+  flex-wrap: wrap;
   gap: 7px;
 
   overflow-x: auto;
