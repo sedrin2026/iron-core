@@ -1,1 +1,258 @@
 
+[
+  {
+    "id": "bench_press",
+    "name": "ベンチプレス",
+    "name_en": "Bench Press",
+    "category": "胸",
+    "equipment": "バーベル",
+    "type": "compound"
+  },
+  {
+    "id": "incline_bench_press",
+    "name": "インクラインベンチプレス",
+    "name_en": "Incline Bench Press",
+    "category": "胸",
+    "equipment": "バーベル",
+    "type": "compound"
+  },
+  {
+    "id": "dumbbell_press",
+    "name": "ダンベルプレス",
+    "name_en": "Dumbbell Press",
+    "category": "胸",
+    "equipment": "ダンベル",
+    "type": "compound"
+  },
+  {
+    "id": "dumbbell_fly",
+    "name": "ダンベルフライ",
+    "name_en": "Dumbbell Fly",
+    "category": "胸",
+    "equipment": "ダンベル",
+    "type": "isolation"
+  },
+  {
+    "id": "push_up",
+    "name": "プッシュアップ",
+    "name_en": "Push Up",
+    "category": "胸",
+    "equipment": "自重",
+    "type": "compound"
+  },
+
+  {
+    "id": "deadlift",
+    "name": "デッドリフト",
+    "name_en": "Deadlift",
+    "category": "背中",
+    "equipment": "バーベル",
+    "type": "compound"
+  },
+  {
+    "id": "lat_pulldown",
+    "name": "ラットプルダウン",
+    "name_en": "Lat Pulldown",
+    "category": "背中",
+    "equipment": "マシン",
+    "type": "compound"
+  },
+  {
+    "id": "barbell_row",
+    "name": "バーベルロウ",
+    "name_en": "Barbell Row",
+    "category": "背中",
+    "equipment": "バーベル",
+    "type": "compound"
+  },
+  {
+    "id": "seated_row",
+    "name": "シーテッドロウ",
+    "name_en": "Seated Row",
+    "category": "背中",
+    "equipment": "マシン",
+    "type": "compound"
+  },
+  {
+    "id": "one_arm_dumbbell_row",
+    "name": "ワンハンドダンベルロウ",
+    "name_en": "One Arm Dumbbell Row",
+    "category": "背中",
+    "equipment": "ダンベル",
+    "type": "compound"
+  },
+
+  {
+    "id": "shoulder_press",
+    "name": "ショルダープレス",
+    "name_en": "Shoulder Press",
+    "category": "肩",
+    "equipment": "ダンベル",
+    "type": "compound"
+  },
+  {
+    "id": "side_raise",
+    "name": "サイドレイズ",
+    "name_en": "Lateral Raise",
+    "category": "肩",
+    "equipment": "ダンベル",
+    "type": "isolation"
+  },
+  {
+    "id": "front_raise",
+    "name": "フロントレイズ",
+    "name_en": "Front Raise",
+    "category": "肩",
+    "equipment": "ダンベル",
+    "type": "isolation"
+  },
+  {
+    "id": "rear_delt_fly",
+    "name": "リアレイズ",
+    "name_en": "Rear Delt Fly",
+    "category": "肩",
+    "equipment": "ダンベル",
+    "type": "isolation"
+  },
+
+  {
+    "id": "barbell_curl",
+    "name": "バーベルカール",
+    "name_en": "Barbell Curl",
+    "category": "腕",
+    "equipment": "バーベル",
+    "type": "isolation"
+  },
+  {
+    "id": "dumbbell_curl",
+    "name": "ダンベルカール",
+    "name_en": "Dumbbell Curl",
+    "category": "腕",
+    "equipment": "ダンベル",
+    "type": "isolation"
+  },
+  {
+    "id": "hammer_curl",
+    "name": "ハンマーカール",
+    "name_en": "Hammer Curl",
+    "category": "腕",
+    "equipment": "ダンベル",
+    "type": "isolation"
+  },
+  {
+    "id": "triceps_pushdown",
+    "name": "トライセプスプッシュダウン",
+    "name_en": "Triceps Pushdown",
+    "category": "腕",
+    "equipment": "ケーブル",
+    "type": "isolation"
+  },
+  {
+    "id": "skull_crusher",
+    "name": "スカルクラッシャー",
+    "name_en": "Skull Crusher",
+    "category": "腕",
+    "equipment": "バーベル",
+    "type": "isolation"
+  },
+
+  {
+    "id": "squat",
+    "name": "スクワット",
+    "name_en": "Squat",
+    "category": "脚",
+    "equipment": "バーベル",
+    "type": "compound"
+  },
+  {
+    "id": "leg_press",
+    "name": "レッグプレス",
+    "name_en": "Leg Press",
+    "category": "脚",
+    "equipment": "マシン",
+    "type": "compound"
+  },
+  {
+    "id": "leg_extension",
+    "name": "レッグエクステンション",
+    "name_en": "Leg Extension",
+    "category": "脚",
+    "equipment": "マシン",
+    "type": "isolation"
+  },
+  {
+    "id": "leg_curl",
+    "name": "レッグカール",
+    "name_en": "Leg Curl",
+    "category": "脚",
+    "equipment": "マシン",
+    "type": "isolation"
+  },
+  {
+    "id": "calf_raise",
+    "name": "カーフレイズ",
+    "name_en": "Calf Raise",
+    "category": "脚",
+    "equipment": "マシン",
+    "type": "isolation"
+  },
+
+  {
+    "id": "crunch",
+    "name": "クランチ",
+    "name_en": "Crunch",
+    "category": "腹",
+    "equipment": "自重",
+    "type": "isolation"
+  },
+  {
+    "id": "leg_raise",
+    "name": "レッグレイズ",
+    "name_en": "Leg Raise",
+    "category": "腹",
+    "equipment": "自重",
+    "type": "isolation"
+  },
+  {
+    "id": "plank",
+    "name": "プランク",
+    "name_en": "Plank",
+    "category": "腹",
+    "equipment": "自重",
+    "type": "isometric"
+  },
+
+  {
+    "id": "hip_thrust",
+    "name": "ヒップスラスト",
+    "name_en": "Hip Thrust",
+    "category": "尻",
+    "equipment": "バーベル",
+    "type": "compound"
+  },
+  {
+    "id": "bulgarian_split_squat",
+    "name": "ブルガリアンスクワット",
+    "name_en": "Bulgarian Split Squat",
+    "category": "脚・尻",
+    "equipment": "ダンベル",
+    "type": "compound"
+  },
+
+  {
+    "id": "burpee",
+    "name": "バーピー",
+    "name_en": "Burpee",
+    "category": "全身",
+    "equipment": "自重",
+    "type": "compound"
+  },
+  {
+    "id": "mountain_climber",
+    "name": "マウンテンクライマー",
+    "name_en": "Mountain Climber",
+    "category": "全身",
+    "equipment": "自重",
+    "type": "compound"
+  }
+]
