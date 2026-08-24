@@ -2080,6 +2080,8 @@ async function initializeIronCoreUI() {
 
   setupExerciseModal();
 
+  setupRestTimer();
+
   setupBodyDataModal();
 
   await updateHomeStats();
@@ -2101,3 +2103,237 @@ document.addEventListener(
     initializeIronCoreUI();
   }
 );
+/* =========================================================
+   REST TIMER
+========================================================= */
+
+let restTimerInterval = null;
+let restTimerSeconds = 90;
+
+/* -------------------------
+   タイマー表示
+------------------------- */
+
+function updateRestTimerDisplay() {
+  const display =
+    document.getElementById('timerDisplay');
+
+  if (!display) {
+    return;
+  }
+
+  const minutes =
+    Math.floor(restTimerSeconds / 60);
+
+  const seconds =
+    restTimerSeconds % 60;
+
+  display.textContent =
+    `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+}
+
+/* -------------------------
+   タイマー停止
+------------------------- */
+
+function stopRestTimer() {
+  if (restTimerInterval) {
+    clearInterval(restTimerInterval);
+    restTimerInterval = null;
+  }
+}
+
+/* -------------------------
+   タイマー開始
+------------------------- */
+
+function startRestTimer() {
+  stopRestTimer();
+
+  updateRestTimerDisplay();
+
+  restTimerInterval =
+    setInterval(() => {
+
+      restTimerSeconds--;
+
+      if (restTimerSeconds <= 0) {
+        restTimerSeconds = 0;
+
+        updateRestTimerDisplay();
+
+        stopRestTimer();
+
+        // タイマー終了
+        if (navigator.vibrate) {
+          navigator.vibrate([
+            300,
+            150,
+            300
+          ]);
+        }
+
+        return;
+      }
+
+      updateRestTimerDisplay();
+
+    }, 1000);
+}
+
+/* -------------------------
+   タイマーを開く
+------------------------- */
+
+function openRestTimer(
+  seconds = 90
+) {
+  restTimerSeconds =
+    Math.max(0, Number(seconds) || 90);
+
+  const modal =
+    document.getElementById(
+      'restTimer'
+    );
+
+  if (!modal) {
+    return;
+  }
+
+  modal.classList.remove(
+    'hidden'
+  );
+
+  updateRestTimerDisplay();
+
+  startRestTimer();
+}
+
+/* -------------------------
+   タイマーを閉じる
+------------------------- */
+
+function closeRestTimer() {
+  stopRestTimer();
+
+  const modal =
+    document.getElementById(
+      'restTimer'
+    );
+
+  modal?.classList.add(
+    'hidden'
+  );
+}
+
+/* -------------------------
+   ＋30秒
+------------------------- */
+
+function addRestTime(seconds) {
+  restTimerSeconds +=
+    Number(seconds) || 0;
+
+  updateRestTimerDisplay();
+}
+
+/* -------------------------
+   −30秒
+------------------------- */
+
+function subtractRestTime(seconds) {
+  restTimerSeconds =
+    Math.max(
+      0,
+      restTimerSeconds -
+        (Number(seconds) || 0)
+    );
+
+  updateRestTimerDisplay();
+
+  if (restTimerSeconds <= 0) {
+    stopRestTimer();
+  }
+}
+
+/* =========================================================
+   REST TIMER CONTROLS
+========================================================= */
+
+function setupRestTimer() {
+
+  const modal =
+    document.getElementById(
+      'restTimer'
+    );
+
+  const minus =
+    document.getElementById(
+      'timerMinus'
+    );
+
+  const skip =
+    document.getElementById(
+      'timerSkip'
+    );
+
+  const plus =
+    document.getElementById(
+      'timerPlus'
+    );
+
+  if (!modal) {
+    return;
+  }
+
+  /* −30 */
+  minus?.addEventListener(
+    'click',
+    () => {
+      subtractRestTime(30);
+    }
+  );
+
+  /* SKIP */
+  skip?.addEventListener(
+    'click',
+    () => {
+      closeRestTimer();
+    }
+  );
+
+  /* +30 */
+  plus?.addEventListener(
+    'click',
+    () => {
+      addRestTime(30);
+    }
+  );
+
+  /* 背景タップで閉じる */
+  modal
+    .querySelector(
+      '.modal-backdrop'
+    )
+    ?.addEventListener(
+      'click',
+      () => {
+        closeRestTimer();
+      }
+    );
+
+  updateRestTimerDisplay();
+}
+
+/* =========================================================
+   REST TIMER API
+========================================================= */
+
+window.IronCoreRestTimer = {
+  open: openRestTimer,
+  close: closeRestTimer,
+  start: startRestTimer,
+  stop: stopRestTimer,
+  addTime: addRestTime,
+  subtractTime: subtractRestTime
+};
