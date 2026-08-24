@@ -1403,10 +1403,7 @@ async function renderWorkout() {
     return;
   }
 
-  if (
-    !currentWorkoutExercises.length
-  ) {
-
+  if (!currentWorkoutExercises.length) {
     container.innerHTML = `
       <div class="empty-state">
         <div>🏋️</div>
@@ -1424,39 +1421,213 @@ async function renderWorkout() {
     return;
   }
 
-  container.innerHTML =
-    currentWorkoutExercises
-      .map((exercise, index) => {
+  const workout =
+    currentWorkoutId
+      ? await getWorkout(currentWorkoutId)
+      : null;
 
-        const name =
-          getExerciseName(exercise);
+  let html = '';
 
-        return `
-          <article
-            class="exercise-card workout-exercise-card"
-            data-workout-exercise-index="${index}"
-          >
+  for (
+    let index = 0;
+    index < currentWorkoutExercises.length;
+    index++
+  ) {
+    const exercise =
+      currentWorkoutExercises[index];
 
-            <div class="exercise-card-main">
+    const name =
+      getExerciseName(exercise);
 
-              <div class="exercise-card-title">
-                ${escapeHTML(name)}
-              </div>
+    const sets =
+      currentWorkoutId
+        ? await getWorkoutSets(
+            currentWorkoutId
+          )
+        : [];
 
-              <div class="exercise-card-subtitle">
-                SETS
-              </div>
+    const exerciseSets =
+      sets.filter(
+        set =>
+          set.exerciseId === exercise.id
+      );
 
-            </div>
+    html += `
+      <article
+        class="exercise-card workout-exercise-card"
+        data-workout-exercise-index="${index}"
+      >
 
-            <div class="exercise-card-meta">
-              ${index + 1}
-            </div>
+        <div class="exercise-card-main">
 
-          </article>
-        `;
-      })
-      .join('');
+          <div class="exercise-card-title">
+            ${escapeHTML(name)}
+          </div>
+
+          <div class="exercise-card-subtitle">
+            ${escapeHTML(
+              getExerciseEquipment(exercise)
+            )}
+          </div>
+
+        </div>
+
+        <div class="workout-set-area">
+
+          ${
+            exerciseSets.length
+              ? exerciseSets
+                  .map(
+                    (set, setIndex) => `
+                      <div class="workout-set-row">
+
+                        <span>
+                          SET ${setIndex + 1}
+                        </span>
+
+                        <strong>
+                          ${set.weight} kg
+                          ×
+                          ${set.reps} reps
+                        </strong>
+
+                      </div>
+                    `
+                  )
+                  .join('')
+              : `
+                <div class="workout-no-sets">
+                  まだセットがありません
+                </div>
+              `
+          }
+
+          <div class="workout-input-row">
+
+            <input
+              type="number"
+              min="0"
+              step="0.5"
+              inputmode="decimal"
+              placeholder="重量 kg"
+              class="workout-weight-input"
+              data-exercise-id="${escapeHTML(
+                exercise.id
+              )}"
+            />
+
+            <input
+              type="number"
+              min="0"
+              step="1"
+              inputmode="numeric"
+              placeholder="回数"
+              class="workout-reps-input"
+              data-exercise-id="${escapeHTML(
+                exercise.id
+              )}"
+            />
+
+            <button
+              type="button"
+              class="primary-button add-set-button"
+              data-exercise-id="${escapeHTML(
+                exercise.id
+              )}"
+            >
+              ＋ SET
+            </button>
+
+          </div>
+
+        </div>
+
+      </article>
+    `;
+  }
+
+  container.innerHTML = html;
+
+  /*
+   * SET追加
+   */
+  container
+    .querySelectorAll(
+      '.add-set-button'
+    )
+    .forEach(button => {
+
+      button.addEventListener(
+        'click',
+        async () => {
+
+          const exerciseId =
+            button.dataset.exerciseId;
+
+          const weightInput =
+            container.querySelector(
+              `.workout-weight-input[data-exercise-id="${exerciseId}"]`
+            );
+
+          const repsInput =
+            container.querySelector(
+              `.workout-reps-input[data-exercise-id="${exerciseId}"]`
+            );
+
+          const weight =
+            Number(weightInput?.value || 0);
+
+          const reps =
+            Number(repsInput?.value || 0);
+
+          if (
+            weight <= 0 ||
+            reps <= 0
+          ) {
+            alert(
+              '重量と回数を入力してください。'
+            );
+
+            return;
+          }
+
+          const existingSets =
+            currentWorkoutId
+              ? await getWorkoutSets(
+                  currentWorkoutId
+                )
+              : [];
+
+          const exerciseSets =
+            existingSets.filter(
+              set =>
+                set.exerciseId ===
+                exerciseId
+            );
+
+          await addSet({
+            workoutId:
+              currentWorkoutId,
+
+            exerciseId,
+
+            setNumber:
+              exerciseSets.length + 1,
+
+            weight,
+
+            reps,
+
+            completed: true
+          });
+
+          weightInput.value = '';
+          repsInput.value = '';
+
+          await renderWorkout();
+        }
+      );
+    });
 }
 
 /* =========================================================
