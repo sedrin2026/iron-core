@@ -754,8 +754,55 @@ window.IronCore = {
   exportData,
   importData
 };
+/* =========================================================
+   UI Navigation
+========================================================= */
 
+function setupNavigation() {
+  const buttons = document.querySelectorAll(
+    '.nav-button'
+  );
+
+  const screens = document.querySelectorAll(
+    '.screen'
+  );
+
+  buttons.forEach(button => {
+    button.addEventListener('click', () => {
+
+      const targetId =
+        button.dataset.screen;
+
+      if (!targetId) {
+        return;
+      }
+
+      // 全画面を非表示
+      screens.forEach(screen => {
+        screen.classList.remove('active');
+      });
+
+      // 対象画面を表示
+      const target =
+        document.getElementById(targetId);
+
+      if (target) {
+        target.classList.add('active');
+      }
+
+      // ナビのactive状態を変更
+      buttons.forEach(item => {
+        item.classList.remove('active');
+      });
+
+      button.classList.add('active');
+    });
+  });
+}
 document.addEventListener(
   'DOMContentLoaded',
-  initializeApp
+  () => {
+    initializeApp();
+    setupNavigation();
+  }
 );
