@@ -799,10 +799,1136 @@ function setupNavigation() {
     });
   });
 }
+/* =========================================================
+   IRON CORE UI
+   Exercise Database / Navigation / Workout UI
+========================================================= */
+
+let currentExerciseCategory = 'all';
+let currentWorkoutId = null;
+let currentWorkoutExercises = [];
+
+/* =========================================================
+   Safe HTML
+========================================================= */
+
+function escapeHTML(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+/* =========================================================
+   Screen Navigation
+========================================================= */
+
+function showScreen(screenId) {
+  const screens =
+    document.querySelectorAll('.screen');
+
+  screens.forEach(screen => {
+    screen.classList.remove('active');
+  });
+
+  const target =
+    document.getElementById(screenId);
+
+  if (target) {
+    target.classList.add('active');
+  }
+
+  const buttons =
+    document.querySelectorAll('.nav-button');
+
+  buttons.forEach(button => {
+    button.classList.toggle(
+      'active',
+      button.dataset.screen === screenId
+    );
+  });
+}
+
+function setupNavigation() {
+  const buttons =
+    document.querySelectorAll('.nav-button');
+
+  buttons.forEach(button => {
+    button.addEventListener('click', () => {
+      const target =
+        button.dataset.screen;
+
+      if (target) {
+        showScreen(target);
+      }
+    });
+  });
+}
+
+/* =========================================================
+   Exercise Name Helpers
+========================================================= */
+
+function getExerciseName(exercise) {
+  return (
+    exercise.name ||
+    exercise.nameJa ||
+    exercise.name_jp ||
+    exercise.name_en ||
+    exercise.title ||
+    exercise.id ||
+    'UNKNOWN EXERCISE'
+  );
+}
+
+function getExerciseEnglishName(exercise) {
+  return (
+    exercise.name_en ||
+    exercise.englishName ||
+    exercise.nameEnglish ||
+    ''
+  );
+}
+
+function getExerciseEquipment(exercise) {
+  return (
+    exercise.equipment ||
+    exercise.equipmentType ||
+    exercise.tool ||
+    '—'
+  );
+}
+
+function getExerciseDescription(exercise) {
+  return (
+    exercise.description ||
+    exercise.descriptionJa ||
+    exercise.instructions ||
+    '説明は登録されていません。'
+  );
+}
+
+/* =========================================================
+   Exercise Database
+========================================================= */
+
+async function renderExerciseDatabase(
+  category = currentExerciseCategory
+) {
+  const container =
+    document.getElementById(
+      'exerciseDatabaseList'
+    );
+
+  if (!container) {
+    return;
+  }
+
+  currentExerciseCategory = category;
+
+  let exercises = [];
+
+  try {
+    exercises = await getExercises();
+  } catch (error) {
+    console.error(
+      'Exercise database error:',
+      error
+    );
+
+    container.innerHTML = `
+      <div class="empty-state">
+        <strong>DATABASE ERROR</strong>
+        <span>種目データを読み込めませんでした。</span>
+      </div>
+    `;
+
+    return;
+  }
+
+  if (category !== 'all') {
+    exercises =
+      exercises.filter(
+        exercise =>
+          exercise.category === category
+      );
+  }
+
+  exercises.sort((a, b) =>
+    getExerciseName(a).localeCompare(
+      getExerciseName(b),
+      'ja'
+    )
+  );
+
+  if (!exercises.length) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div>💪</div>
+        <strong>NO EXERCISES</strong>
+        <span>
+          このカテゴリーには種目がありません。
+        </span>
+      </div>
+    `;
+
+    return;
+  }
+
+  container.innerHTML =
+    exercises.map(exercise => {
+
+      const name =
+        getExerciseName(exercise);
+
+      const english =
+        getExerciseEnglishName(exercise);
+
+      const equipment =
+        getExerciseEquipment(exercise);
+
+      return `
+        <article
+          class="exercise-card"
+          data-exercise-id="${escapeHTML(
+            exercise.id
+          )}"
+          role="button"
+          tabindex="0"
+        >
+
+          <div class="exercise-card-main">
+
+            <div class="exercise-card-title">
+              ${escapeHTML(name)}
+            </div>
+
+            ${
+              english
+                ? `
+                  <div class="exercise-card-subtitle">
+                    ${escapeHTML(english)}
+                  </div>
+                `
+                : ''
+            }
+
+          </div>
+
+          <div class="exercise-card-meta">
+            ${escapeHTML(equipment)}
+          </div>
+
+        </article>
+      `;
+    }).join('');
+}
+
+/* =========================================================
+   Exercise Detail
+========================================================= */
+
+async function openExerciseDetail(
+  exerciseId
+) {
+  const exercise =
+    await getExercise(exerciseId);
+
+  if (!exercise) {
+    alert('種目データが見つかりません。');
+    return;
+  }
+
+  const name =
+    getExerciseName(exercise);
+
+  const english =
+    getExerciseEnglishName(exercise);
+
+  const category =
+    exercise.category || '—';
+
+  const equipment =
+    getExerciseEquipment(exercise);
+
+  const description =
+    getExerciseDescription(exercise);
+
+  const pr =
+    await getExercisePR(exerciseId);
+
+  const detailHTML = `
+    <div
+      class="modal exercise-detail-modal"
+      id="exerciseDetailModal"
+    >
+
+      <div
+        class="modal-backdrop"
+        data-close-exercise-detail="true"
+      ></div>
+
+      <div class="modal-card">
+
+        <div class="modal-header">
+
+          <div>
+            <span class="eyebrow">
+              EXERCISE
+            </span>
+
+            <h3>
+              ${escapeHTML(name)}
+            </h3>
+
+            ${
+              english
+                ? `
+                  <small>
+                    ${escapeHTML(english)}
+                  </small>
+                `
+                : ''
+            }
+          </div>
+
+          <button
+            type="button"
+            id="closeExerciseDetail"
+          >
+            ×
+          </button>
+
+        </div>
+
+        <div class="exercise-detail-content">
+
+          <div class="exercise-detail-row">
+            <span>CATEGORY</span>
+            <strong>
+              ${escapeHTML(category)}
+            </strong>
+          </div>
+
+          <div class="exercise-detail-row">
+            <span>EQUIPMENT</span>
+            <strong>
+              ${escapeHTML(equipment)}
+            </strong>
+          </div>
+
+          <div class="exercise-detail-description">
+            <span>DESCRIPTION</span>
+
+            <p>
+              ${escapeHTML(description)}
+            </p>
+          </div>
+
+          <div class="exercise-detail-pr">
+
+            <span>PERSONAL RECORD</span>
+
+            <strong>
+              ${
+                pr.maxWeight
+                  ? `${pr.maxWeight} kg`
+                  : 'NO RECORD'
+              }
+            </strong>
+
+            <small>
+              ${
+                pr.estimated1RM
+                  ? `EST. 1RM ${pr.estimated1RM} kg`
+                  : ''
+              }
+            </small>
+
+          </div>
+
+          <button
+            type="button"
+            class="primary-button"
+            id="addDetailExerciseButton"
+          >
+            ＋ ADD TO WORKOUT
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+  `;
+
+  const existing =
+    document.getElementById(
+      'exerciseDetailModal'
+    );
+
+  if (existing) {
+    existing.remove();
+  }
+
+  document.body.insertAdjacentHTML(
+    'beforeend',
+    detailHTML
+  );
+
+  const modal =
+    document.getElementById(
+      'exerciseDetailModal'
+    );
+
+  const close =
+    () => modal?.remove();
+
+  document
+    .getElementById(
+      'closeExerciseDetail'
+    )
+    ?.addEventListener(
+      'click',
+      close
+    );
+
+  modal
+    ?.querySelector(
+      '[data-close-exercise-detail="true"]'
+    )
+    ?.addEventListener(
+      'click',
+      close
+    );
+
+  document
+    .getElementById(
+      'addDetailExerciseButton'
+    )
+    ?.addEventListener(
+      'click',
+      async () => {
+
+        await addExerciseToWorkout(
+          exercise
+        );
+
+        close();
+
+        showScreen(
+          'workoutScreen'
+        );
+      }
+    );
+}
+
+/* =========================================================
+   Exercise Card Events
+========================================================= */
+
+function setupExerciseCardEvents() {
+  const container =
+    document.getElementById(
+      'exerciseDatabaseList'
+    );
+
+  if (!container) {
+    return;
+  }
+
+  container.addEventListener(
+    'click',
+    event => {
+
+      const card =
+        event.target.closest(
+          '.exercise-card'
+        );
+
+      if (!card) {
+        return;
+      }
+
+      const exerciseId =
+        card.dataset.exerciseId;
+
+      if (exerciseId) {
+        openExerciseDetail(
+          exerciseId
+        );
+      }
+    }
+  );
+
+  container.addEventListener(
+    'keydown',
+    event => {
+
+      if (
+        event.key !== 'Enter' &&
+        event.key !== ' '
+      ) {
+        return;
+      }
+
+      const card =
+        event.target.closest(
+          '.exercise-card'
+        );
+
+      if (!card) {
+        return;
+      }
+
+      event.preventDefault();
+
+      const exerciseId =
+        card.dataset.exerciseId;
+
+      if (exerciseId) {
+        openExerciseDetail(
+          exerciseId
+        );
+      }
+    }
+  );
+}
+
+/* =========================================================
+   Exercise Filters
+========================================================= */
+
+function setupExerciseFilters() {
+  const buttons =
+    document.querySelectorAll(
+      '.filter-button'
+    );
+
+  buttons.forEach(button => {
+
+    button.addEventListener(
+      'click',
+      async () => {
+
+        buttons.forEach(item => {
+          item.classList.remove(
+            'active'
+          );
+        });
+
+        button.classList.add(
+          'active'
+        );
+
+        const category =
+          button.dataset.category ||
+          'all';
+
+        await renderExerciseDatabase(
+          category
+        );
+      }
+    );
+  });
+}
+
+/* =========================================================
+   Workout
+========================================================= */
+
+async function ensureWorkout() {
+
+  if (currentWorkoutId) {
+    const existing =
+      await getWorkout(
+        currentWorkoutId
+      );
+
+    if (
+      existing &&
+      existing.status === 'active'
+    ) {
+      return existing;
+    }
+  }
+
+  const workout =
+    await createWorkout({
+      name: 'FREE WORKOUT'
+    });
+
+  currentWorkoutId =
+    workout.id;
+
+  currentWorkoutExercises = [];
+
+  return workout;
+}
+
+async function addExerciseToWorkout(
+  exercise
+) {
+  const workout =
+    await ensureWorkout();
+
+  const alreadyAdded =
+    currentWorkoutExercises.some(
+      item =>
+        item.id === exercise.id
+    );
+
+  if (!alreadyAdded) {
+    currentWorkoutExercises.push(
+      exercise
+    );
+  }
+
+  await renderWorkout();
+
+  showScreen(
+    'workoutScreen'
+  );
+
+  return workout;
+}
+
+async function renderWorkout() {
+  const container =
+    document.getElementById(
+      'exerciseList'
+    );
+
+  if (!container) {
+    return;
+  }
+
+  if (
+    !currentWorkoutExercises.length
+  ) {
+
+    container.innerHTML = `
+      <div class="empty-state">
+        <div>🏋️</div>
+
+        <strong>
+          NO EXERCISES YET
+        </strong>
+
+        <span>
+          ＋ ADD EXERCISE から種目を追加してください。
+        </span>
+      </div>
+    `;
+
+    return;
+  }
+
+  container.innerHTML =
+    currentWorkoutExercises
+      .map((exercise, index) => {
+
+        const name =
+          getExerciseName(exercise);
+
+        return `
+          <article
+            class="exercise-card workout-exercise-card"
+            data-workout-exercise-index="${index}"
+          >
+
+            <div class="exercise-card-main">
+
+              <div class="exercise-card-title">
+                ${escapeHTML(name)}
+              </div>
+
+              <div class="exercise-card-subtitle">
+                SETS
+              </div>
+
+            </div>
+
+            <div class="exercise-card-meta">
+              ${index + 1}
+            </div>
+
+          </article>
+        `;
+      })
+      .join('');
+}
+
+/* =========================================================
+   Workout Buttons
+========================================================= */
+
+function setupWorkoutButtons() {
+
+  document
+    .getElementById(
+      'startWorkoutButton'
+    )
+    ?.addEventListener(
+      'click',
+      async () => {
+
+        await ensureWorkout();
+
+        await renderWorkout();
+
+        showScreen(
+          'workoutScreen'
+        );
+      }
+    );
+
+  document
+    .getElementById(
+      'addExerciseButton'
+    )
+    ?.addEventListener(
+      'click',
+      async () => {
+
+        await renderExerciseSelectModal();
+
+      }
+    );
+
+  document
+    .getElementById(
+      'finishWorkoutButton'
+    )
+    ?.addEventListener(
+      'click',
+      async () => {
+
+        if (!currentWorkoutId) {
+          showScreen('homeScreen');
+          return;
+        }
+
+        const workout =
+          await getWorkout(
+            currentWorkoutId
+          );
+
+        if (
+          workout &&
+          workout.status === 'active'
+        ) {
+          await completeWorkout(
+            currentWorkoutId
+          );
+        }
+
+        currentWorkoutId = null;
+        currentWorkoutExercises = [];
+
+        await renderWorkout();
+
+        showScreen(
+          'homeScreen'
+        );
+      }
+    );
+}
+
+/* =========================================================
+   Workout Exercise Select Modal
+========================================================= */
+
+async function renderExerciseSelectModal() {
+
+  const modal =
+    document.getElementById(
+      'exerciseModal'
+    );
+
+  const list =
+    document.getElementById(
+      'exerciseSelectList'
+    );
+
+  if (!modal || !list) {
+    return;
+  }
+
+  const exercises =
+    await getExercises();
+
+  list.innerHTML =
+    exercises
+      .map(exercise => {
+
+        return `
+          <button
+            type="button"
+            class="exercise-select-item"
+            data-exercise-id="${escapeHTML(
+              exercise.id
+            )}"
+          >
+            <strong>
+              ${escapeHTML(
+                getExerciseName(
+                  exercise
+                )
+              )}
+            </strong>
+
+            <small>
+              ${escapeHTML(
+                getExerciseEquipment(
+                  exercise
+                )
+              )}
+            </small>
+          </button>
+        `;
+      })
+      .join('');
+
+  modal.classList.remove(
+    'hidden'
+  );
+
+  list
+    .querySelectorAll(
+      '.exercise-select-item'
+    )
+    .forEach(button => {
+
+      button.addEventListener(
+        'click',
+        async () => {
+
+          const exercise =
+            await getExercise(
+              button.dataset.exerciseId
+            );
+
+          if (exercise) {
+            await addExerciseToWorkout(
+              exercise
+            );
+          }
+
+          modal.classList.add(
+            'hidden'
+          );
+        }
+      );
+    });
+}
+
+/* =========================================================
+   Exercise Select Modal Controls
+========================================================= */
+
+function setupExerciseModal() {
+
+  const modal =
+    document.getElementById(
+      'exerciseModal'
+    );
+
+  const close =
+    document.getElementById(
+      'closeExerciseModal'
+    );
+
+  const backdrop =
+    modal?.querySelector(
+      '.modal-backdrop'
+    );
+
+  const search =
+    document.getElementById(
+      'exerciseSearchInput'
+    );
+
+  const list =
+    document.getElementById(
+      'exerciseSelectList'
+    );
+
+  close?.addEventListener(
+    'click',
+    () => {
+      modal?.classList.add(
+        'hidden'
+      );
+    }
+  );
+
+  backdrop?.addEventListener(
+    'click',
+    () => {
+      modal?.classList.add(
+        'hidden'
+      );
+    }
+  );
+
+  search?.addEventListener(
+    'input',
+    () => {
+
+      const query =
+        search.value
+          .trim()
+          .toLowerCase();
+
+      list
+        ?.querySelectorAll(
+          '.exercise-select-item'
+        )
+        .forEach(item => {
+
+          const text =
+            item.textContent
+              .toLowerCase();
+
+          item.style.display =
+            !query ||
+            text.includes(query)
+              ? ''
+              : 'none';
+        });
+    }
+  );
+}
+
+/* =========================================================
+   Body Data Modal
+========================================================= */
+
+function setupBodyDataModal() {
+
+  const modal =
+    document.getElementById(
+      'bodyDataModal'
+    );
+
+  const open =
+    document.getElementById(
+      'addBodyDataButton'
+    );
+
+  const close =
+    document.getElementById(
+      'closeBodyDataModal'
+    );
+
+  const save =
+    document.getElementById(
+      'saveBodyDataButton'
+    );
+
+  open?.addEventListener(
+    'click',
+    () => {
+      modal?.classList.remove(
+        'hidden'
+      );
+    }
+  );
+
+  close?.addEventListener(
+    'click',
+    () => {
+      modal?.classList.add(
+        'hidden'
+      );
+    }
+  );
+
+  modal
+    ?.querySelector(
+      '.modal-backdrop'
+    )
+    ?.addEventListener(
+      'click',
+      () => {
+        modal.classList.add(
+          'hidden'
+        );
+      }
+    );
+
+  save?.addEventListener(
+    'click',
+    async () => {
+
+      const weight =
+        document.getElementById(
+          'bodyWeightInput'
+        )?.value;
+
+      const bodyFat =
+        document.getElementById(
+          'bodyFatInput'
+        )?.value;
+
+      const muscleMass =
+        document.getElementById(
+          'muscleMassInput'
+        )?.value;
+
+      if (!weight) {
+        alert(
+          '体重を入力してください。'
+        );
+
+        return;
+      }
+
+      await addBodyData({
+        weight,
+        bodyFat:
+          bodyFat || null,
+        muscleMass:
+          muscleMass || null
+      });
+
+      modal?.classList.add(
+        'hidden'
+      );
+
+      await updateHomeStats();
+    }
+  );
+}
+
+/* =========================================================
+   Home Stats
+========================================================= */
+
+async function updateHomeStats() {
+
+  try {
+
+    const workouts =
+      await getWorkouts();
+
+    const bodyData =
+      await getBodyData();
+
+    const workoutCount =
+      workouts.length;
+
+    const countElement =
+      document.getElementById(
+        'workoutCountValue'
+      );
+
+    if (countElement) {
+      countElement.textContent =
+        workoutCount;
+    }
+
+    const latestBody =
+      bodyData[
+        bodyData.length - 1
+      ];
+
+    if (latestBody) {
+
+      const weight =
+        document.getElementById(
+          'weightValue'
+        );
+
+      const fat =
+        document.getElementById(
+          'bodyFatValue'
+        );
+
+      const muscle =
+        document.getElementById(
+          'muscleValue'
+        );
+
+      if (weight) {
+        weight.textContent =
+          latestBody.weight ??
+          '--';
+      }
+
+      if (fat) {
+        fat.textContent =
+          latestBody.bodyFat ??
+          '--';
+      }
+
+      if (muscle) {
+        muscle.textContent =
+          latestBody.muscleMass ??
+          '--';
+      }
+    }
+
+  } catch (error) {
+    console.error(
+      'Home stats error:',
+      error
+    );
+  }
+}
+
+/* =========================================================
+   Exercise Screen Initialization
+========================================================= */
+
+async function initializeExerciseUI() {
+
+  await renderExerciseDatabase(
+    'all'
+  );
+
+  setupExerciseCardEvents();
+
+  setupExerciseFilters();
+}
+
+/* =========================================================
+   Final Initialization
+========================================================= */
+
+async function initializeIronCoreUI() {
+
+  await initializeApp();
+
+  setupNavigation();
+
+  await initializeExerciseUI();
+
+  setupWorkoutButtons();
+
+  setupExerciseModal();
+
+  setupBodyDataModal();
+
+  await updateHomeStats();
+
+  await renderWorkout();
+
+  console.log(
+    'IRON CORE UI initialized successfully.'
+  );
+}
+
+/* =========================================================
+   Start
+========================================================= */
+
 document.addEventListener(
   'DOMContentLoaded',
   () => {
-    initializeApp();
-    setupNavigation();
+    initializeIronCoreUI();
   }
 );
