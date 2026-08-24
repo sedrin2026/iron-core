@@ -691,12 +691,10 @@ async function initializeApp() {
   try {
     await openDatabase();
 
+    // exercises.json を常に最新状態で
+    // IndexedDBへ同期する
     const exercises =
-      await getExercises();
-
-    if (!exercises.length) {
       await loadExercises();
-    }
 
     console.log(
       'IRON CORE initialized successfully.'
@@ -704,7 +702,7 @@ async function initializeApp() {
 
     console.log(
       `Exercise database: ${
-        (await getExercises()).length
+        exercises.length
       } exercises`
     );
 
