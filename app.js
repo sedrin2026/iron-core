@@ -226,7 +226,7 @@ function deleteRecord(storeName, id) {
 ========================================================= */
 
 async function loadExercises() {
-  const response = await fetch('./data/exercises.json');
+  const response = await fetch('./exercises.json');
 
   if (!response.ok) {
     throw new Error(
