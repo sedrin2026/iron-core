@@ -1,4 +1,3 @@
-
 'use strict';
 
 /*
@@ -446,12 +445,6 @@ async function calculateWorkoutVolume(workoutId) {
    1RM
 ========================================================= */
 
-/*
- * Epley Formula
- *
- * 1RM = weight × (1 + reps / 30)
- */
-
 function calculate1RM(weight, reps) {
   weight = Number(weight);
   reps = Number(reps);
@@ -605,28 +598,22 @@ async function getSetting(key, defaultValue = null) {
 ========================================================= */
 
 async function exportData() {
-  const data = {
+  return {
     version: 1,
     exportedAt: nowISO(),
-
     workouts: await getAllRecords(
       APP.STORES.workouts
     ),
-
     sets: await getAllRecords(
       APP.STORES.sets
     ),
-
     bodyData: await getAllRecords(
       APP.STORES.bodyData
     ),
-
     settings: await getAllRecords(
       APP.STORES.settings
     )
   };
-
-  return data;
 }
 
 async function importData(data) {
@@ -650,15 +637,12 @@ async function importData(data) {
     workouts: transaction.objectStore(
       APP.STORES.workouts
     ),
-
     sets: transaction.objectStore(
       APP.STORES.sets
     ),
-
     bodyData: transaction.objectStore(
       APP.STORES.bodyData
     ),
-
     settings: transaction.objectStore(
       APP.STORES.settings
     )
@@ -691,8 +675,6 @@ async function initializeApp() {
   try {
     await openDatabase();
 
-    // exercises.json を常に最新状態で
-    // IndexedDBへ同期する
     const exercises =
       await loadExercises();
 
@@ -701,11 +683,8 @@ async function initializeApp() {
     );
 
     console.log(
-      `Exercise database: ${
-        exercises.length
-      } exercises`
+      `Exercise database: ${exercises.length} exercises`
     );
-
   } catch (error) {
     console.error(
       'IRON CORE initialization failed:',
@@ -720,7 +699,6 @@ async function initializeApp() {
 
 window.IronCore = {
   generateId,
-
   openDatabase,
 
   getExercises,
@@ -752,54 +730,367 @@ window.IronCore = {
   exportData,
   importData
 };
+
 /* =========================================================
-   UI Navigation
+   HISTORY / STATS
 ========================================================= */
 
-function setupNavigation() {
-  const buttons = document.querySelectorAll(
-    '.nav-button'
-  );
+async function renderHistory() {
+  const container =
+    document.getElementById('historyList');
 
-  const screens = document.querySelectorAll(
-    '.screen'
-  );
+  if (!container) return;
 
-  buttons.forEach(button => {
-    button.addEventListener('click', () => {
+  try {
+    const workouts =
+      (await getWorkouts())
+        .filter(
+          workout =>
+            workout.status === 'completed'
+        );
 
-      const targetId =
-        button.dataset.screen;
+    if (!workouts.length) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <div>📋</div>
+          <strong>NO WORKOUTS YET</strong>
+          <span>
+            完了したトレーニングがここに表示されます。
+          </span>
+        </div>
+      `;
 
-      if (!targetId) {
-        return;
+      return;
+    }
+
+    const cards = [];
+
+    for (const workout of workouts) {
+      const sets =
+        await getWorkoutSets(workout.id);
+
+      const volume =
+        sets.reduce(
+          (total, set) =>
+            total + calculateSetVolume(set),
+          0
+        );
+
+      const exerciseIds =
+        [
+          ...new Set(
+            sets.map(
+              set => set.exerciseId
+            )
+          )
+        ];
+
+      const names = [];
+
+      for (const id of exerciseIds) {
+        const exercise =
+          await getExercise(id);
+
+        if (exercise) {
+          names.push(
+            getExerciseName(exercise)
+          );
+        }
       }
 
-      // 全画面を非表示
-      screens.forEach(screen => {
-        screen.classList.remove('active');
-      });
+      const date =
+        new Date(
+          workout.completedAt ||
+          workout.date
+        );
 
-      // 対象画面を表示
-      const target =
-        document.getElementById(targetId);
+      cards.push(`
+        <article class="history-card">
 
-      if (target) {
-        target.classList.add('active');
-      }
+          <div class="history-card-header">
 
-      // ナビのactive状態を変更
-      buttons.forEach(item => {
-        item.classList.remove('active');
-      });
+            <div>
+              <strong>
+                ${escapeHTML(
+                  workout.name ||
+                  'WORKOUT'
+                )}
+              </strong>
 
-      button.classList.add('active');
-    });
-  });
+              <small>
+                ${date.toLocaleDateString(
+                  'ja-JP'
+                )}
+                ${date.toLocaleTimeString(
+                  'ja-JP',
+                  {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  }
+                )}
+              </small>
+            </div>
+
+            <span class="history-volume">
+              ${round(
+                volume,
+                1
+              ).toLocaleString()} kg
+            </span>
+
+          </div>
+
+          <div class="history-exercises">
+
+            ${
+              names.length
+                ? names
+                    .map(
+                      name =>
+                        `<span>${escapeHTML(
+                          name
+                        )}</span>`
+                    )
+                    .join('')
+                : '<span>記録されたセットはありません</span>'
+            }
+
+          </div>
+
+          <small>
+            ${sets.length}
+            SET${sets.length === 1 ? '' : 'S'}
+          </small>
+
+        </article>
+      `);
+    }
+
+    container.innerHTML =
+      cards.join('');
+
+  } catch (error) {
+    console.error(
+      'History render error:',
+      error
+    );
+
+    container.innerHTML = `
+      <div class="empty-state">
+        <strong>HISTORY ERROR</strong>
+        <span>
+          履歴を読み込めませんでした。
+        </span>
+      </div>
+    `;
+  }
 }
+
+async function renderStats() {
+  try {
+    const workouts =
+      await getWorkouts();
+
+    const completed =
+      workouts.filter(
+        workout =>
+          workout.status === 'completed'
+      );
+
+    let totalVolume = 0;
+
+    const activity =
+      new Map();
+
+    for (const workout of completed) {
+      const sets =
+        await getWorkoutSets(
+          workout.id
+        );
+
+      totalVolume +=
+        sets.reduce(
+          (total, set) =>
+            total +
+            calculateSetVolume(set),
+          0
+        );
+
+      const key =
+        new Date(
+          workout.completedAt ||
+          workout.date
+        ).toLocaleDateString(
+          'ja-JP'
+        );
+
+      activity.set(
+        key,
+        (activity.get(key) || 0) + 1
+      );
+    }
+
+    const count =
+      document.getElementById(
+        'statsWorkoutCount'
+      );
+
+    const volume =
+      document.getElementById(
+        'statsTotalVolume'
+      );
+
+    if (count) {
+      count.textContent =
+        completed.length;
+    }
+
+    if (volume) {
+      volume.textContent =
+        `${round(
+          totalVolume,
+          1
+        ).toLocaleString()} kg`;
+    }
+
+    const activityChart =
+      document.getElementById(
+        'activityChart'
+      );
+
+    if (activityChart) {
+
+      if (!completed.length) {
+        activityChart.innerHTML =
+          'NO DATA';
+      } else {
+
+        const recent =
+          [
+            ...activity.entries()
+          ]
+            .slice(0, 7)
+            .reverse();
+
+        activityChart.innerHTML = `
+          <div class="activity-bars">
+
+            ${
+              recent
+                .map(
+                  ([date, number]) => `
+                    <div
+                      class="activity-bar-column"
+                    >
+
+                      <div
+                        class="activity-bar-value"
+                      >
+                        ${number}
+                      </div>
+
+                      <div
+                        class="activity-bar"
+                        style="height:${Math.min(
+                          100,
+                          30 + number * 30
+                        )}px"
+                        title="${escapeHTML(
+                          date
+                        )}"
+                      ></div>
+
+                      <small>
+                        ${escapeHTML(
+                          date.slice(5)
+                        )}
+                      </small>
+
+                    </div>
+                  `
+                )
+                .join('')
+            }
+
+          </div>
+        `;
+      }
+    }
+
+    const weightChart =
+      document.getElementById(
+        'weightChart'
+      );
+
+    if (weightChart) {
+
+      const body =
+        await getBodyData();
+
+      if (!body.length) {
+        weightChart.innerHTML =
+          'NO DATA';
+      } else {
+
+        weightChart.innerHTML = `
+          <div class="weight-data-list">
+
+            ${
+              body
+                .slice(-7)
+                .map(
+                  item => `
+                    <div
+                      class="weight-data-row"
+                    >
+
+                      <span>
+                        ${escapeHTML(
+                          new Date(
+                            item.date
+                          ).toLocaleDateString(
+                            'ja-JP'
+                          )
+                        )}
+                      </span>
+
+                      <strong>
+                        ${escapeHTML(
+                          item.weight
+                        )} kg
+                      </strong>
+
+                    </div>
+                  `
+                )
+                .join('')
+            }
+
+          </div>
+        `;
+      }
+    }
+
+    const homeCount =
+      document.getElementById(
+        'workoutCountValue'
+      );
+
+    if (homeCount) {
+      homeCount.textContent =
+        completed.length;
+    }
+
+  } catch (error) {
+    console.error(
+      'Stats render error:',
+      error
+    );
+  }
+}
+
 /* =========================================================
    IRON CORE UI
-   Exercise Database / Navigation / Workout UI
 ========================================================= */
 
 let currentExerciseCategory = 'all';
@@ -816,7 +1107,10 @@ function escapeHTML(value) {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
+    .replace(
+      /'/g,
+      '&#039;'
+    );
 }
 
 /* =========================================================
@@ -825,43 +1119,84 @@ function escapeHTML(value) {
 
 function showScreen(screenId) {
   const screens =
-    document.querySelectorAll('.screen');
+    document.querySelectorAll(
+      '.screen'
+    );
 
   screens.forEach(screen => {
-    screen.classList.remove('active');
+    screen.classList.remove(
+      'active'
+    );
   });
 
   const target =
-    document.getElementById(screenId);
+    document.getElementById(
+      screenId
+    );
 
   if (target) {
-    target.classList.add('active');
+    target.classList.add(
+      'active'
+    );
   }
 
   const buttons =
-    document.querySelectorAll('.nav-button');
+    document.querySelectorAll(
+      '.nav-button'
+    );
 
   buttons.forEach(button => {
     button.classList.toggle(
       'active',
-      button.dataset.screen === screenId
+      button.dataset.screen ===
+        screenId
     );
   });
 }
 
 function setupNavigation() {
   const buttons =
-    document.querySelectorAll('.nav-button');
+    document.querySelectorAll(
+      '.nav-button'
+    );
 
   buttons.forEach(button => {
-    button.addEventListener('click', () => {
-      const target =
-        button.dataset.screen;
 
-      if (target) {
+    button.addEventListener(
+      'click',
+      async () => {
+
+        const target =
+          button.dataset.screen;
+
+        if (!target) {
+          return;
+        }
+
         showScreen(target);
+
+        if (
+          target ===
+          'historyScreen'
+        ) {
+          await renderHistory();
+        }
+
+        if (
+          target ===
+          'statsScreen'
+        ) {
+          await renderStats();
+        }
+
+        if (
+          target ===
+          'homeScreen'
+        ) {
+          await updateHomeStats();
+        }
       }
-    });
+    );
   });
 }
 
@@ -924,13 +1259,16 @@ async function renderExerciseDatabase(
     return;
   }
 
-  currentExerciseCategory = category;
+  currentExerciseCategory =
+    category;
 
   let exercises = [];
 
   try {
-    exercises = await getExercises();
+    exercises =
+      await getExercises();
   } catch (error) {
+
     console.error(
       'Exercise database error:',
       error
@@ -939,7 +1277,9 @@ async function renderExerciseDatabase(
     container.innerHTML = `
       <div class="empty-state">
         <strong>DATABASE ERROR</strong>
-        <span>種目データを読み込めませんでした。</span>
+        <span>
+          種目データを読み込めませんでした。
+        </span>
       </div>
     `;
 
@@ -950,15 +1290,17 @@ async function renderExerciseDatabase(
     exercises =
       exercises.filter(
         exercise =>
-          exercise.category === category
+          exercise.category ===
+          category
       );
   }
 
-  exercises.sort((a, b) =>
-    getExerciseName(a).localeCompare(
-      getExerciseName(b),
-      'ja'
-    )
+  exercises.sort(
+    (a, b) =>
+      getExerciseName(a).localeCompare(
+        getExerciseName(b),
+        'ja'
+      )
   );
 
   if (!exercises.length) {
@@ -976,52 +1318,74 @@ async function renderExerciseDatabase(
   }
 
   container.innerHTML =
-    exercises.map(exercise => {
+    exercises
+      .map(
+        exercise => {
 
-      const name =
-        getExerciseName(exercise);
+          const name =
+            getExerciseName(
+              exercise
+            );
 
-      const english =
-        getExerciseEnglishName(exercise);
+          const english =
+            getExerciseEnglishName(
+              exercise
+            );
 
-      const equipment =
-        getExerciseEquipment(exercise);
+          const equipment =
+            getExerciseEquipment(
+              exercise
+            );
 
-      return `
-        <article
-          class="exercise-card"
-          data-exercise-id="${escapeHTML(
-            exercise.id
-          )}"
-          role="button"
-          tabindex="0"
-        >
+          return `
+            <article
+              class="exercise-card"
+              data-exercise-id="${escapeHTML(
+                exercise.id
+              )}"
+              role="button"
+              tabindex="0"
+            >
 
-          <div class="exercise-card-main">
+              <div
+                class="exercise-card-main"
+              >
 
-            <div class="exercise-card-title">
-              ${escapeHTML(name)}
-            </div>
+                <div
+                  class="exercise-card-title"
+                >
+                  ${escapeHTML(name)}
+                </div>
 
-            ${
-              english
-                ? `
-                  <div class="exercise-card-subtitle">
-                    ${escapeHTML(english)}
-                  </div>
-                `
-                : ''
-            }
+                ${
+                  english
+                    ? `
+                      <div
+                        class="exercise-card-subtitle"
+                      >
+                        ${escapeHTML(
+                          english
+                        )}
+                      </div>
+                    `
+                    : ''
+                }
 
-          </div>
+              </div>
 
-          <div class="exercise-card-meta">
-            ${escapeHTML(equipment)}
-          </div>
+              <div
+                class="exercise-card-meta"
+              >
+                ${escapeHTML(
+                  equipment
+                )}
+              </div>
 
-        </article>
-      `;
-    }).join('');
+            </article>
+          `;
+        }
+      )
+      .join('');
 }
 
 /* =========================================================
@@ -1032,30 +1396,45 @@ async function openExerciseDetail(
   exerciseId
 ) {
   const exercise =
-    await getExercise(exerciseId);
+    await getExercise(
+      exerciseId
+    );
 
   if (!exercise) {
-    alert('種目データが見つかりません。');
+    alert(
+      '種目データが見つかりません。'
+    );
     return;
   }
 
   const name =
-    getExerciseName(exercise);
+    getExerciseName(
+      exercise
+    );
 
   const english =
-    getExerciseEnglishName(exercise);
+    getExerciseEnglishName(
+      exercise
+    );
 
   const category =
-    exercise.category || '—';
+    exercise.category ||
+    '—';
 
   const equipment =
-    getExerciseEquipment(exercise);
+    getExerciseEquipment(
+      exercise
+    );
 
   const description =
-    getExerciseDescription(exercise);
+    getExerciseDescription(
+      exercise
+    );
 
   const pr =
-    await getExercisePR(exerciseId);
+    await getExercisePR(
+      exerciseId
+    );
 
   const detailHTML = `
     <div
@@ -1085,7 +1464,9 @@ async function openExerciseDetail(
               english
                 ? `
                   <small>
-                    ${escapeHTML(english)}
+                    ${escapeHTML(
+                      english
+                    )}
                   </small>
                 `
                 : ''
@@ -1101,33 +1482,51 @@ async function openExerciseDetail(
 
         </div>
 
-        <div class="exercise-detail-content">
+        <div
+          class="exercise-detail-content"
+        >
 
-          <div class="exercise-detail-row">
+          <div
+            class="exercise-detail-row"
+          >
             <span>CATEGORY</span>
             <strong>
-              ${escapeHTML(category)}
+              ${escapeHTML(
+                category
+              )}
             </strong>
           </div>
 
-          <div class="exercise-detail-row">
+          <div
+            class="exercise-detail-row"
+          >
             <span>EQUIPMENT</span>
             <strong>
-              ${escapeHTML(equipment)}
+              ${escapeHTML(
+                equipment
+              )}
             </strong>
           </div>
 
-          <div class="exercise-detail-description">
+          <div
+            class="exercise-detail-description"
+          >
             <span>DESCRIPTION</span>
 
             <p>
-              ${escapeHTML(description)}
+              ${escapeHTML(
+                description
+              )}
             </p>
           </div>
 
-          <div class="exercise-detail-pr">
+          <div
+            class="exercise-detail-pr"
+          >
 
-            <span>PERSONAL RECORD</span>
+            <span>
+              PERSONAL RECORD
+            </span>
 
             <strong>
               ${
@@ -1393,33 +1792,81 @@ async function addExerciseToWorkout(
   return workout;
 }
 
-async function getPreviousExerciseSet(exerciseId, currentWorkoutId) {
-  const currentWorkout = currentWorkoutId
-    ? await getWorkout(currentWorkoutId)
-    : null;
+async function getPreviousExerciseSet(
+  exerciseId,
+  currentWorkoutId
+) {
+  const currentWorkout =
+    currentWorkoutId
+      ? await getWorkout(
+          currentWorkoutId
+        )
+      : null;
 
-  const workouts = await getWorkouts();
-  const previousWorkouts = workouts
-    .filter(workout =>
-      workout.status === 'completed' &&
-      (!currentWorkout ||
-        new Date(workout.date) <
-          new Date(currentWorkout.startedAt || currentWorkout.date))
-    )
-    .sort((a, b) => new Date(b.date) - new Date(a.date));
+  const workouts =
+    await getWorkouts();
+
+  const previousWorkouts =
+    workouts
+      .filter(
+        workout =>
+          workout.status ===
+            'completed' &&
+          (
+            !currentWorkout ||
+            new Date(
+              workout.date
+            ) <
+              new Date(
+                currentWorkout.startedAt ||
+                currentWorkout.date
+              )
+          )
+      )
+      .sort(
+        (a, b) =>
+          new Date(b.date) -
+          new Date(a.date)
+      );
 
   for (const workout of previousWorkouts) {
-    const sets = await getWorkoutSets(workout.id);
-    const exerciseSets = sets.filter(
-      set => set.exerciseId === exerciseId && set.completed
-    );
+
+    const sets =
+      await getWorkoutSets(
+        workout.id
+      );
+
+    const exerciseSets =
+      sets.filter(
+        set =>
+          set.exerciseId ===
+            exerciseId &&
+          set.completed
+      );
 
     if (exerciseSets.length) {
-      const bestSet = [...exerciseSets].sort((a, b) => {
-        const volumeDiff = calculateSetVolume(b) - calculateSetVolume(a);
-        if (volumeDiff !== 0) return volumeDiff;
-        return Number(b.weight || 0) - Number(a.weight || 0);
-      })[0];
+
+      const bestSet =
+        [...exerciseSets]
+          .sort(
+            (a, b) => {
+
+              const volumeDiff =
+                calculateSetVolume(b) -
+                calculateSetVolume(a);
+
+              if (
+                volumeDiff !== 0
+              ) {
+                return volumeDiff;
+              }
+
+              return (
+                Number(b.weight || 0) -
+                Number(a.weight || 0)
+              );
+            }
+          )[0];
 
       return {
         workout,
@@ -1431,143 +1878,317 @@ async function getPreviousExerciseSet(exerciseId, currentWorkoutId) {
   return null;
 }
 
-function getProgressMessage(previousSet, currentWeight, currentReps) {
-  if (!previousSet) return '';
+function getProgressMessage(
+  previousSet,
+  currentWeight,
+  currentReps
+) {
+  if (!previousSet) {
+    return '';
+  }
 
-  const weight = Number(currentWeight || 0);
-  const reps = Number(currentReps || 0);
-  if (weight <= 0 || reps <= 0) return '';
+  const weight =
+    Number(currentWeight || 0);
 
-  const previousWeight = Number(previousSet.weight || 0);
-  const previousReps = Number(previousSet.reps || 0);
+  const reps =
+    Number(currentReps || 0);
 
-  if (weight > previousWeight) {
+  if (
+    weight <= 0 ||
+    reps <= 0
+  ) {
+    return '';
+  }
+
+  const previousWeight =
+    Number(
+      previousSet.weight || 0
+    );
+
+  const previousReps =
+    Number(
+      previousSet.reps || 0
+    );
+
+  if (
+    weight >
+    previousWeight
+  ) {
     return '🔥 WEIGHT UP';
   }
 
-  if (weight === previousWeight && reps > previousReps) {
-    return `🔥 +${reps - previousReps} REPS`;
+  if (
+    weight === previousWeight &&
+    reps > previousReps
+  ) {
+    return `🔥 +${
+      reps - previousReps
+    } REPS`;
   }
 
-  if (weight === previousWeight && reps === previousReps) {
+  if (
+    weight === previousWeight &&
+    reps === previousReps
+  ) {
     return '⚡ MATCHED';
   }
 
   return '';
 }
 
-function renderSetProgressBadge(previousSet, set) {
-  const message = getProgressMessage(
-    previousSet,
-    set.weight,
-    set.reps
-  );
+function renderSetProgressBadge(
+  previousSet,
+  set
+) {
+  const message =
+    getProgressMessage(
+      previousSet,
+      set.weight,
+      set.reps
+    );
 
   return message
-    ? `<span class="set-progress-badge">${escapeHTML(message)}</span>`
+    ? `
+      <span
+        class="set-progress-badge"
+      >
+        ${escapeHTML(message)}
+      </span>
+    `
     : '';
 }
 
 async function renderWorkout() {
+
   const container =
-    document.getElementById('exerciseList');
+    document.getElementById(
+      'exerciseList'
+    );
 
   if (!container) {
     return;
   }
 
-  if (!currentWorkoutExercises.length) {
+  if (
+    !currentWorkoutExercises.length
+  ) {
     container.innerHTML = `
       <div class="empty-state">
         <div>🏋️</div>
-        <strong>NO EXERCISES YET</strong>
-        <span>＋ ADD EXERCISE から種目を追加してください。</span>
+        <strong>
+          NO EXERCISES YET
+        </strong>
+        <span>
+          ＋ ADD EXERCISE
+          から種目を追加してください。
+        </span>
       </div>
     `;
+
     return;
   }
 
-  const workout = currentWorkoutId
-    ? await getWorkout(currentWorkoutId)
-    : null;
+  const workout =
+    currentWorkoutId
+      ? await getWorkout(
+          currentWorkoutId
+        )
+      : null;
 
-  const allCurrentSets = currentWorkoutId
-    ? await getWorkoutSets(currentWorkoutId)
-    : [];
+  const allCurrentSets =
+    currentWorkoutId
+      ? await getWorkoutSets(
+          currentWorkoutId
+        )
+      : [];
 
   let html = '';
 
-  for (let index = 0; index < currentWorkoutExercises.length; index++) {
-    const exercise = currentWorkoutExercises[index];
-    const name = getExerciseName(exercise);
-    const exerciseSets = allCurrentSets.filter(
-      set => set.exerciseId === exercise.id
-    );
-    const previous = await getPreviousExerciseSet(
-      exercise.id,
-      currentWorkoutId
-    );
+  for (
+    let index = 0;
+    index <
+      currentWorkoutExercises.length;
+    index++
+  ) {
 
-    const previousHTML = previous
-      ? `
-        <div class="previous-performance">
-          <span>PREVIOUS BEST</span>
-          <strong>${previous.set.weight} kg × ${previous.set.reps} reps</strong>
-          <small>${new Date(previous.workout.date).toLocaleDateString('ja-JP')}</small>
-        </div>
-      `
-      : `
-        <div class="previous-performance previous-empty">
-          <span>PREVIOUS BEST</span>
-          <strong>NO RECORD</strong>
-        </div>
-      `;
+    const exercise =
+      currentWorkoutExercises[
+        index
+      ];
+
+    const name =
+      getExerciseName(
+        exercise
+      );
+
+    const exerciseSets =
+      allCurrentSets.filter(
+        set =>
+          set.exerciseId ===
+          exercise.id
+      );
+
+    const previous =
+      await getPreviousExerciseSet(
+        exercise.id,
+        currentWorkoutId
+      );
+
+    const previousHTML =
+      previous
+        ? `
+          <div
+            class="previous-performance"
+          >
+            <span>
+              PREVIOUS BEST
+            </span>
+
+            <strong>
+              ${previous.set.weight}
+              kg ×
+              ${previous.set.reps}
+              reps
+            </strong>
+
+            <small>
+              ${new Date(
+                previous.workout.date
+              ).toLocaleDateString(
+                'ja-JP'
+              )}
+            </small>
+          </div>
+        `
+        : `
+          <div
+            class="
+              previous-performance
+              previous-empty
+            "
+          >
+            <span>
+              PREVIOUS BEST
+            </span>
+
+            <strong>
+              NO RECORD
+            </strong>
+          </div>
+        `;
 
     html += `
       <article
-        class="exercise-card workout-exercise-card"
+        class="
+          exercise-card
+          workout-exercise-card
+        "
         data-workout-exercise-index="${index}"
       >
-        <div class="exercise-card-main">
+
+        <div
+          class="exercise-card-main"
+        >
+
           <div>
-            <div class="exercise-card-title">
+
+            <div
+              class="exercise-card-title"
+            >
               ${escapeHTML(name)}
             </div>
-            <div class="exercise-card-subtitle">
-              ${escapeHTML(getExerciseEquipment(exercise))}
+
+            <div
+              class="
+                exercise-card-subtitle
+              "
+            >
+              ${escapeHTML(
+                getExerciseEquipment(
+                  exercise
+                )
+              )}
             </div>
+
           </div>
+
         </div>
 
         ${previousHTML}
 
-        <div class="workout-set-area">
+        <div
+          class="workout-set-area"
+        >
+
           ${
             exerciseSets.length
-              ? exerciseSets.map((set, setIndex) => `
-                  <div class="workout-set-row completed-set-row">
-                    <span>SET ${setIndex + 1}</span>
-                    <strong>${set.weight} kg × ${set.reps} reps</strong>
-                    ${renderSetProgressBadge(previous?.set, set)}
-                    <span class="set-check">✓</span>
-                  </div>
-                `).join('')
+              ? exerciseSets
+                  .map(
+                    (
+                      set,
+                      setIndex
+                    ) => `
+                      <div
+                        class="
+                          workout-set-row
+                          completed-set-row
+                        "
+                      >
+
+                        <span>
+                          SET
+                          ${
+                            setIndex + 1
+                          }
+                        </span>
+
+                        <strong>
+                          ${set.weight}
+                          kg ×
+                          ${set.reps}
+                          reps
+                        </strong>
+
+                        ${renderSetProgressBadge(
+                          previous?.set,
+                          set
+                        )}
+
+                        <span
+                          class="set-check"
+                        >
+                          ✓
+                        </span>
+
+                      </div>
+                    `
+                  )
+                  .join('')
               : `
-                <div class="workout-no-sets">
+                <div
+                  class="workout-no-sets"
+                >
                   まだセットがありません
                 </div>
               `
           }
 
-          <div class="workout-input-row">
+          <div
+            class="workout-input-row"
+          >
+
             <input
               type="number"
               min="0"
               step="0.5"
               inputmode="decimal"
               placeholder="重量 kg"
-              class="workout-weight-input"
-              data-exercise-id="${escapeHTML(exercise.id)}"
+              class="
+                workout-weight-input
+              "
+              data-exercise-id="${escapeHTML(
+                exercise.id
+              )}"
             />
 
             <input
@@ -1576,72 +2197,126 @@ async function renderWorkout() {
               step="1"
               inputmode="numeric"
               placeholder="回数"
-              class="workout-reps-input"
-              data-exercise-id="${escapeHTML(exercise.id)}"
+              class="
+                workout-reps-input
+              "
+              data-exercise-id="${escapeHTML(
+                exercise.id
+              )}"
             />
 
             <button
               type="button"
-              class="primary-button add-set-button"
-              data-exercise-id="${escapeHTML(exercise.id)}"
+              class="
+                primary-button
+                add-set-button
+              "
+              data-exercise-id="${escapeHTML(
+                exercise.id
+              )}"
             >
               ＋ SET
             </button>
+
           </div>
+
         </div>
+
       </article>
     `;
   }
 
-  container.innerHTML = html;
+  container.innerHTML =
+    html;
 
   container
-    .querySelectorAll('.add-set-button')
-    .forEach(button => {
-      button.addEventListener('click', async () => {
-        const exerciseId = button.dataset.exerciseId;
+    .querySelectorAll(
+      '.add-set-button'
+    )
+    .forEach(
+      button => {
 
-        const weightInput = container.querySelector(
-          `.workout-weight-input[data-exercise-id="${exerciseId}"]`
+        button.addEventListener(
+          'click',
+          async () => {
+
+            const exerciseId =
+              button.dataset
+                .exerciseId;
+
+            const weightInput =
+              container.querySelector(
+                `.workout-weight-input[data-exercise-id="${exerciseId}"]`
+              );
+
+            const repsInput =
+              container.querySelector(
+                `.workout-reps-input[data-exercise-id="${exerciseId}"]`
+              );
+
+            const weight =
+              Number(
+                weightInput?.value ||
+                0
+              );
+
+            const reps =
+              Number(
+                repsInput?.value ||
+                0
+              );
+
+            if (
+              weight <= 0 ||
+              reps <= 0
+            ) {
+              alert(
+                '重量と回数を入力してください。'
+              );
+
+              return;
+            }
+
+            const existingSets =
+              currentWorkoutId
+                ? await getWorkoutSets(
+                    currentWorkoutId
+                  )
+                : [];
+
+            const exerciseSets =
+              existingSets.filter(
+                set =>
+                  set.exerciseId ===
+                  exerciseId
+              );
+
+            await addSet({
+              workoutId:
+                currentWorkoutId,
+              exerciseId,
+              setNumber:
+                exerciseSets.length + 1,
+              weight,
+              reps,
+              completed:
+                true
+            });
+
+            weightInput.value = '';
+            repsInput.value = '';
+
+            await renderWorkout();
+
+            /*
+             * セット完了と同時に
+             * 90秒レストを開始
+             */
+            openRestTimer(90);
+          }
         );
-        const repsInput = container.querySelector(
-          `.workout-reps-input[data-exercise-id="${exerciseId}"]`
-        );
-
-        const weight = Number(weightInput?.value || 0);
-        const reps = Number(repsInput?.value || 0);
-
-        if (weight <= 0 || reps <= 0) {
-          alert('重量と回数を入力してください。');
-          return;
-        }
-
-        const existingSets = currentWorkoutId
-          ? await getWorkoutSets(currentWorkoutId)
-          : [];
-
-        const exerciseSets = existingSets.filter(
-          set => set.exerciseId === exerciseId
-        );
-
-        await addSet({
-          workoutId: currentWorkoutId,
-          exerciseId,
-          setNumber: exerciseSets.length + 1,
-          weight,
-          reps,
-          completed: true
-        });
-
-        weightInput.value = '';
-        repsInput.value = '';
-
-        await renderWorkout();
-
-        // セット完了と同時に90秒レストを開始。
-        openRestTimer(90);
-      });
-    });
+      }
+    );
 }
 
 /* =========================================================
@@ -1690,7 +2365,10 @@ function setupWorkoutButtons() {
       async () => {
 
         if (!currentWorkoutId) {
-          showScreen('homeScreen');
+          showScreen(
+            'homeScreen'
+          );
+
           return;
         }
 
@@ -1701,17 +2379,24 @@ function setupWorkoutButtons() {
 
         if (
           workout &&
-          workout.status === 'active'
+          workout.status ===
+            'active'
         ) {
           await completeWorkout(
             currentWorkoutId
           );
         }
 
-        currentWorkoutId = null;
-        currentWorkoutExercises = [];
+        currentWorkoutId =
+          null;
+
+        currentWorkoutExercises =
+          [];
 
         await renderWorkout();
+        await renderHistory();
+        await renderStats();
+        await updateHomeStats();
 
         showScreen(
           'homeScreen'
@@ -1745,16 +2430,18 @@ async function renderExerciseSelectModal() {
 
   list.innerHTML =
     exercises
-      .map(exercise => {
-
-        return `
+      .map(
+        exercise => `
           <button
             type="button"
-            class="exercise-select-item"
+            class="
+              exercise-select-item
+            "
             data-exercise-id="${escapeHTML(
               exercise.id
             )}"
           >
+
             <strong>
               ${escapeHTML(
                 getExerciseName(
@@ -1770,9 +2457,10 @@ async function renderExerciseSelectModal() {
                 )
               )}
             </small>
+
           </button>
-        `;
-      })
+        `
+      )
       .join('');
 
   modal.classList.remove(
@@ -1783,29 +2471,32 @@ async function renderExerciseSelectModal() {
     .querySelectorAll(
       '.exercise-select-item'
     )
-    .forEach(button => {
+    .forEach(
+      button => {
 
-      button.addEventListener(
-        'click',
-        async () => {
+        button.addEventListener(
+          'click',
+          async () => {
 
-          const exercise =
-            await getExercise(
-              button.dataset.exerciseId
-            );
+            const exercise =
+              await getExercise(
+                button.dataset
+                  .exerciseId
+              );
 
-          if (exercise) {
-            await addExerciseToWorkout(
-              exercise
+            if (exercise) {
+              await addExerciseToWorkout(
+                exercise
+              );
+            }
+
+            modal.classList.add(
+              'hidden'
             );
           }
-
-          modal.classList.add(
-            'hidden'
-          );
-        }
-      );
-    });
+        );
+      }
+    );
 }
 
 /* =========================================================
@@ -1870,18 +2561,22 @@ function setupExerciseModal() {
         ?.querySelectorAll(
           '.exercise-select-item'
         )
-        .forEach(item => {
+        .forEach(
+          item => {
 
-          const text =
-            item.textContent
-              .toLowerCase();
+            const text =
+              item.textContent
+                .toLowerCase();
 
-          item.style.display =
-            !query ||
-            text.includes(query)
-              ? ''
-              : 'none';
-        });
+            item.style.display =
+              !query ||
+              text.includes(
+                query
+              )
+                ? ''
+                : 'none';
+          }
+        );
     }
   );
 }
@@ -1983,6 +2678,7 @@ function setupBodyDataModal() {
       );
 
       await updateHomeStats();
+      await renderStats();
     }
   );
 }
@@ -2001,8 +2697,12 @@ async function updateHomeStats() {
     const bodyData =
       await getBodyData();
 
-    const workoutCount =
-      workouts.length;
+    const completedWorkouts =
+      workouts.filter(
+        workout =>
+          workout.status ===
+          'completed'
+      );
 
     const countElement =
       document.getElementById(
@@ -2011,7 +2711,7 @@ async function updateHomeStats() {
 
     if (countElement) {
       countElement.textContent =
-        workoutCount;
+        completedWorkouts.length;
     }
 
     const latestBody =
@@ -2101,6 +2801,8 @@ async function initializeIronCoreUI() {
   await updateHomeStats();
 
   await renderWorkout();
+  await renderHistory();
+  await renderStats();
 
   console.log(
     'IRON CORE UI initialized successfully.'
@@ -2117,6 +2819,7 @@ document.addEventListener(
     initializeIronCoreUI();
   }
 );
+
 /* =========================================================
    REST TIMER
 ========================================================= */
@@ -2129,21 +2832,36 @@ let restTimerSeconds = 90;
 ------------------------- */
 
 function updateRestTimerDisplay() {
+
   const display =
-    document.getElementById('timerDisplay');
+    document.getElementById(
+      'timerDisplay'
+    );
 
   if (!display) {
     return;
   }
 
   const minutes =
-    Math.floor(restTimerSeconds / 60);
+    Math.floor(
+      restTimerSeconds / 60
+    );
 
   const seconds =
     restTimerSeconds % 60;
 
   display.textContent =
-    `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    `${String(
+      minutes
+    ).padStart(
+      2,
+      '0'
+    )}:${String(
+      seconds
+    ).padStart(
+      2,
+      '0'
+    )}`;
 }
 
 /* -------------------------
@@ -2151,9 +2869,15 @@ function updateRestTimerDisplay() {
 ------------------------- */
 
 function stopRestTimer() {
+
   if (restTimerInterval) {
-    clearInterval(restTimerInterval);
-    restTimerInterval = null;
+
+    clearInterval(
+      restTimerInterval
+    );
+
+    restTimerInterval =
+      null;
   }
 }
 
@@ -2162,33 +2886,49 @@ function stopRestTimer() {
 ------------------------- */
 
 function startRestTimer() {
+
   stopRestTimer();
 
   updateRestTimerDisplay();
 
   restTimerInterval =
-    setInterval(() => {
+    setInterval(
+      () => {
 
-      restTimerSeconds--;
+        restTimerSeconds--;
 
-      if (restTimerSeconds <= 0) {
-        restTimerSeconds = 0;
+        if (
+          restTimerSeconds <=
+          0
+        ) {
+
+          restTimerSeconds =
+            0;
+
+          updateRestTimerDisplay();
+
+          stopRestTimer();
+
+          if (
+            navigator.vibrate
+          ) {
+            navigator.vibrate(
+              [
+                300,
+                150,
+                300
+              ]
+            );
+          }
+
+          return;
+        }
 
         updateRestTimerDisplay();
 
-        stopRestTimer();
-
-        // タイマー終了
-        if (navigator.vibrate) {
-          navigator.vibrate([300, 150, 300]);
-        }
-
-        return;
-      }
-
-      updateRestTimerDisplay();
-
-    }, 1000);
+      },
+      1000
+    );
 }
 
 /* -------------------------
@@ -2198,8 +2938,12 @@ function startRestTimer() {
 function openRestTimer(
   seconds = 90
 ) {
+
   restTimerSeconds =
-    Math.max(0, Number(seconds) || 90);
+    Math.max(
+      0,
+      Number(seconds) || 90
+    );
 
   const modal =
     document.getElementById(
@@ -2210,12 +2954,22 @@ function openRestTimer(
     return;
   }
 
-  modal.classList.remove('hidden');
+  modal.classList.remove(
+    'hidden'
+  );
 
-  const status = document.getElementById('timerStatus');
-  if (status) status.textContent = 'REST TIMER';
+  const status =
+    document.getElementById(
+      'timerStatus'
+    );
+
+  if (status) {
+    status.textContent =
+      'REST TIMER';
+  }
 
   updateRestTimerDisplay();
+
   startRestTimer();
 }
 
@@ -2224,6 +2978,7 @@ function openRestTimer(
 ------------------------- */
 
 function closeRestTimer() {
+
   stopRestTimer();
 
   const modal =
@@ -2241,6 +2996,7 @@ function closeRestTimer() {
 ------------------------- */
 
 function addRestTime(seconds) {
+
   restTimerSeconds +=
     Number(seconds) || 0;
 
@@ -2251,17 +3007,26 @@ function addRestTime(seconds) {
    −30秒
 ------------------------- */
 
-function subtractRestTime(seconds) {
+function subtractRestTime(
+  seconds
+) {
+
   restTimerSeconds =
     Math.max(
       0,
       restTimerSeconds -
-        (Number(seconds) || 0)
+        (
+          Number(seconds) ||
+          0
+        )
     );
 
   updateRestTimerDisplay();
 
-  if (restTimerSeconds <= 0) {
+  if (
+    restTimerSeconds <=
+    0
+  ) {
     stopRestTimer();
   }
 }
@@ -2296,7 +3061,6 @@ function setupRestTimer() {
     return;
   }
 
-  /* −30 */
   minus?.addEventListener(
     'click',
     () => {
@@ -2304,7 +3068,6 @@ function setupRestTimer() {
     }
   );
 
-  /* SKIP */
   skip?.addEventListener(
     'click',
     () => {
@@ -2312,7 +3075,6 @@ function setupRestTimer() {
     }
   );
 
-  /* +30 */
   plus?.addEventListener(
     'click',
     () => {
@@ -2320,7 +3082,6 @@ function setupRestTimer() {
     }
   );
 
-  /* 背景タップで閉じる */
   modal
     .querySelector(
       '.modal-backdrop'
@@ -2345,5 +3106,6 @@ window.IronCoreRestTimer = {
   start: startRestTimer,
   stop: stopRestTimer,
   addTime: addRestTime,
-  subtractTime: subtractRestTime
+  subtractTime:
+    subtractRestTime
 };
