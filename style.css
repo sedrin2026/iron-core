@@ -313,3 +313,17 @@ main {
   85% { opacity: 1; }
   100% { transform: translateY(400px); opacity: 0; }
 }
+/* スクロールを復活させる修正 */
+html, body {
+  height: auto !important;
+  overflow-y: auto !important; /* スクロール制限を解除 */
+}
+
+#app {
+  height: auto !important;
+  min-height: 100vh;
+}
+
+main {
+  overflow-y: visible !important;
+}
