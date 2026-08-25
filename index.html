@@ -1,831 +1,123 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
-  >
-
-  <meta
-    name="theme-color"
-    content="#080b10"
-  >
-
-  <meta
-    name="apple-mobile-web-app-capable"
-    content="yes"
-  >
-
-  <meta
-    name="apple-mobile-web-app-status-bar-style"
-    content="black-translucent"
-  >
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>IRON CORE</title>
-
-  <link rel="manifest" href="./manifest.json">
-  <link rel="stylesheet" href="./style.css">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-
-  <!-- =====================================================
-       APP
-  ====================================================== -->
-
   <div id="app">
-
-    <!-- HEADER -->
-
+    <!-- ヘッダー -->
     <header class="app-header">
-
       <div class="brand">
-
-        <div class="brand-mark">
-          IC
-        </div>
-
+        <div class="brand-mark">IC</div>
         <div class="brand-text">
-          <strong>IRON CORE</strong>
-          <span>WORKOUT SYSTEM</span>
+          <strong>IRON CORE</strong><br>
+          <span>BODY METRICS</span>
         </div>
-
       </div>
-
-      <button
-        class="icon-button"
-        id="settingsButton"
-        type="button"
-        aria-label="設定"
-      >
-        ⚙
-      </button>
-
+      <button class="icon-button">⚙️</button>
     </header>
 
-
-    <!-- ===================================================
-         MAIN
-    ==================================================== -->
-
-    <main id="mainContent">
-
-
-      <!-- HOME / BODY CORE SCANNER -->
-      <section id="homeScreen" class="screen active future-home-screen">
-
-        <!-- BODY PROFILE // TOP -->
-        <section class="body-profile-panel" id="bodyProfilePanel">
-          <div class="body-profile-title-row">
-            <div>
-              <span class="eyebrow">BODY PROFILE // INITIALIZE</span>
-              <h1>あなたの身体データを登録してください</h1>
-              <p>登録したデータをBMI・AI COACH・トレーニング分析の基準として使用します。</p>
-            </div>
-            <div class="profile-live-status" id="inlineProfileStatus">OFFLINE</div>
-          </div>
-
+    <!-- メイン表示エリア -->
+    <main>
+      <section class="screen active future-home-screen">
+        
+        <!-- プロフィール簡易表示 -->
+        <div class="body-profile-panel">
           <div class="inline-profile-grid">
-            <label class="inline-profile-field">
-              <span>年齢 <b>AGE</b></span>
-              <input id="inlineProfileAge" type="number" min="13" max="100" inputmode="numeric" placeholder="30">
-              <small>歳</small>
-            </label>
-            <label class="inline-profile-field">
-              <span>身長 <b>HEIGHT</b></span>
-              <input id="inlineProfileHeight" type="number" min="100" max="250" step="0.1" inputmode="decimal" placeholder="170">
-              <small>cm</small>
-            </label>
-            <label class="inline-profile-field">
-              <span>体重 <b>WEIGHT</b></span>
-              <input id="inlineProfileWeight" type="number" min="20" max="300" step="0.1" inputmode="decimal" placeholder="70">
-              <small>kg</small>
-            </label>
-            <div class="inline-profile-field bmi-field">
-              <span>BMI <b>INDEX</b></span>
-              <strong id="inlineProfileBMI">--</strong>
-              <small id="inlineProfileBMIStatus">AUTO</small>
+            <div class="inline-profile-field">
+              <span>身長</span>
+              <input type="number" value="170" readonly>
             </div>
-            <button type="button" class="inline-profile-save" id="inlineProfileSaveButton">
-              <span>保存する</span>
-              <b>SAVE &amp; ACTIVATE</b>
-              <i>✓</i>
-            </button>
-          </div>
-          <label class="inline-profile-check">
-            <input id="inlineProfileSaveCheck" type="checkbox">
-            <span><b>SAVE &amp; ACTIVATE</b> にチェックして保存すると、以降この身体データをAI COACHの基準として使用します。</span>
-          </label>
-        </section>
-
-        <!-- BODY SCANNER -->
-        <div class="body-core-stage single-body-stage" id="bodyCoreStage">
-          <div class="scanner-grid"></div>
-          <div class="scan-line"></div>
-          <div class="scan-floor"></div>
-
-          <div class="core-readout core-readout-top">
-            <span>BIOMETRIC CORE</span><strong id="coreProfileValue">OFFLINE</strong>
-          </div>
-          <div class="core-readout core-readout-left">
-            <span>BODY MASS</span><strong id="coreWeightValue">-- KG</strong>
-          </div>
-          <div class="core-readout core-readout-right">
-            <span>BMI INDEX</span><strong id="coreBMIValue">--</strong>
-          </div>
-
-          <div class="body-scan-title">TAP TO SELECT // MUSCLE ANALYSIS</div>
-
-          <div class="body-model-frame single-front-model" id="wireframeBody" aria-label="正面ワイヤーフレーム人体・部位選択">
-            <div class="body-model-glow"></div>
-            <div class="body-model-grid-glow"></div>
-            <img class="body-model-image" src="body-front-wireframe.png" alt="正面を向いた水色のワイヤーフレーム人体" draggable="false">
-
-            <!-- Major muscle touch zones: the user taps the body itself. -->
-            <button class="body-hotspot body-hotspot-major major-shoulders" data-body-part="shoulders" aria-label="肩を選択"><span>SHOULDERS</span></button>
-            <button class="body-hotspot body-hotspot-major major-chest" data-body-part="chest" aria-label="胸を選択"><span>CHEST</span></button>
-            <button class="body-hotspot body-hotspot-major major-arms-left" data-body-part="arms" aria-label="左腕を選択"><span>ARMS</span></button>
-            <button class="body-hotspot body-hotspot-major major-arms-right" data-body-part="arms" aria-label="右腕を選択"><span>ARMS</span></button>
-            <button class="body-hotspot body-hotspot-major major-abs" data-body-part="abs" aria-label="腹筋を選択"><span>ABS</span></button>
-            <button class="body-hotspot body-hotspot-major major-thighs-left" data-body-part="legs" aria-label="左太ももを選択"><span>THIGHS</span></button>
-            <button class="body-hotspot body-hotspot-major major-thighs-right" data-body-part="legs" aria-label="右太ももを選択"><span>THIGHS</span></button>
-            <button class="body-hotspot body-hotspot-major major-calves-left" data-body-part="calves" aria-label="左ふくらはぎを選択"><span>CALVES</span></button>
-            <button class="body-hotspot body-hotspot-major major-calves-right" data-body-part="calves" aria-label="右ふくらはぎを選択"><span>CALVES</span></button>
-
-            <!-- Back is available from the scanner control because this screen currently has only a front-view image. -->
-            <button class="body-back-access" type="button" data-body-part="back" aria-label="背中の種目を表示">BACK<br><small>背中</small></button>
-          </div>
-
-          <aside class="body-side-rail" aria-label="身体ステータス">
-            <div class="rail-card"><span>MUSCLE STATUS</span><strong>72%</strong><small>GOOD</small><i class="rail-ring"></i></div>
-            <div class="rail-card"><span>RECOVERY</span><strong>82%</strong><small>良好</small><i class="rail-ring recovery"></i></div>
-            <div class="rail-card"><span>BODY FAT</span><strong id="railBodyFat">--</strong><small>PROFILE DATA</small></div>
-            <div class="rail-card"><span>HYDRATION</span><strong>GOOD</strong><small>水分バランス</small></div>
-          </aside>
-
-          <div class="body-stage-hint" id="bodyStageHint">部位をタップすると、鍛えたい部位の種目が表示されます</div>
-        </div>
-
-        <div id="aiCoachHost" class="ai-coach-host"></div>
-
-        <section class="target-panel hidden" id="targetPanel" aria-live="polite" aria-label="選択した部位のトレーニング種目">
-          <div class="target-panel-topline"><span>IRON CORE // MUSCLE ANALYSIS</span><i></i></div>
-          <div class="target-panel-head">
-            <div class="target-panel-title-wrap">
-              <span class="eyebrow">TARGET AREA // FOCUS</span>
-              <div class="target-title-line">
-                <strong id="targetPanelJa">胸</strong>
-                <h2 id="targetPanelTitle">CHEST</h2>
-              </div>
-              <p id="targetPanelDescription">この部位を効率よく鍛えるためのおすすめ種目を表示します。</p>
+            <div class="inline-profile-field">
+              <span>体重</span>
+              <input type="number" value="65" readonly>
             </div>
-            <div class="target-anatomy" aria-hidden="true">
-              <img src="body-front-wireframe.png" alt="">
+            <div class="inline-profile-field">
+              <span>体脂肪</span>
+              <input type="number" value="15" readonly>
             </div>
-            <button type="button" id="closeTargetPanel" class="target-close" aria-label="部位選択を閉じる">×</button>
-          </div>
-          <div class="target-panel-meta">
-            <span class="target-zoom-badge" id="targetZoomBadge">SCAN × 1.8</span>
-            <strong><b id="targetExerciseCount">0</b> ITEMS</strong>
-          </div>
-          <div class="target-section-label"><span>おすすめ種目</span><small>RECOMMENDED EXERCISES</small></div>
-          <div class="target-exercise-list" id="targetExerciseList">
-            <div class="target-loading">SCANNING EXERCISE DATABASE…</div>
-          </div>
-          <button type="button" class="target-close-wide" id="closeTargetPanelWide">閉じる <span>×</span></button>
-        </section>
-
-        <!-- Legacy data hooks kept for the existing data engine -->
-        <div class="legacy-home-hooks" aria-hidden="true">
-          <span id="todayWorkoutName">FREE WORKOUT</span>
-          <span id="todayExerciseCount">0</span><span id="todayWorkoutTime">--</span>
-          <span id="streakValue">0</span><span id="volumeValue">0</span><span id="prValue">0</span><span id="workoutCountValue">0</span>
-          <span id="weightValue">--</span><span id="bodyFatValue">--</span><span id="muscleValue">--</span>
-          <button id="startWorkoutButton" type="button"></button><button id="addBodyDataButton" type="button"></button>
-        </div>
-      </section>
-
-      <!-- =================================================
-           WORKOUT SCREEN
-      ================================================== -->
-
-      <section
-        id="workoutScreen"
-        class="screen"
-      >
-
-        <div class="screen-header">
-
-          <div>
-
-            <span class="eyebrow">
-              ACTIVE SESSION
-            </span>
-
-            <h2>
-              WORKOUT
-            </h2>
-
-          </div>
-
-          <button
-            id="finishWorkoutButton"
-            class="danger-button"
-            type="button"
-          >
-            FINISH
-          </button>
-
-        </div>
-
-
-        <div
-          id="exerciseList"
-          class="exercise-list"
-        >
-
-          <!-- JavaScriptで生成 -->
-
-        </div>
-
-
-        <button
-          id="addExerciseButton"
-          class="secondary-button"
-          type="button"
-        >
-          ＋ ADD EXERCISE
-        </button>
-
-      </section>
-
-
-      <!-- =================================================
-           STATS SCREEN
-      ================================================== -->
-
-      <section
-        id="statsScreen"
-        class="screen"
-      >
-
-        <div class="screen-header">
-
-          <div>
-
-            <span class="eyebrow">
-              PERFORMANCE
-            </span>
-
-            <h2>
-              STATS
-            </h2>
-
-          </div>
-
-        </div>
-
-
-        <div class="stats-overview">
-
-          <article class="large-stat-card">
-
-            <span>
-              TOTAL WORKOUTS
-            </span>
-
-            <strong id="statsWorkoutCount">
-              0
-            </strong>
-
-          </article>
-
-
-          <article class="large-stat-card">
-
-            <span>
-              TOTAL VOLUME
-            </span>
-
-            <strong id="statsTotalVolume">
-              0 kg
-            </strong>
-
-          </article>
-
-        </div>
-
-
-        <div class="chart-card">
-
-          <div class="chart-header">
-
-            <span>
-              BODY WEIGHT
-            </span>
-
-          </div>
-
-          <div
-            id="weightChart"
-            class="chart-placeholder"
-          >
-            NO DATA
-          </div>
-
-        </div>
-
-
-        <div class="chart-card">
-
-          <div class="chart-header">
-
-            <span>
-              WORKOUT ACTIVITY
-            </span>
-
-          </div>
-
-          <div
-            id="activityChart"
-            class="chart-placeholder"
-          >
-            NO DATA
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- =================================================
-           HISTORY SCREEN
-      ================================================== -->
-
-      <section
-        id="historyScreen"
-        class="screen"
-      >
-
-        <div class="screen-header">
-
-          <div>
-
-            <span class="eyebrow">
-              TRAINING LOG
-            </span>
-
-            <h2>
-              HISTORY
-            </h2>
-
-          </div>
-
-        </div>
-
-
-        <div
-          id="historyList"
-          class="history-list"
-        >
-
-          <div class="empty-state">
-
-            <div>
-              📋
+            <div class="inline-profile-field">
+              <span>BMI</span>
+              <input type="number" value="22.5" readonly>
             </div>
-
-            <strong>
-              NO WORKOUTS YET
-            </strong>
-
-            <span>
-              完了したトレーニングがここに表示されます。
-            </span>
-
+            <button class="inline-profile-save">編集</button>
           </div>
+        </div>
 
+        <!-- ワイヤーフレーム表示ステージ -->
+        <div class="body-core-stage single-body-stage">
+          <div class="wireframe-container">
+            <svg class="cyber-wireframe" viewBox="0 0 200 420" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="2" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+              </defs>
+
+              <g stroke="#00e5ff" stroke-width="1.2" fill="none" filter="url(#glow)">
+                <!-- 頭部 -->
+                <polygon points="100,20 112,28 110,48 100,56 90,48 88,28" />
+                <line x1="88" y1="28" x2="112" y2="28" />
+                <line x1="90" y1="48" x2="110" y2="48" />
+                <line x1="100" y1="20" x2="100" y2="56" />
+
+                <!-- 胸部・腹部 -->
+                <polygon points="100,68 60,78 68,125 100,135 132,125 140,78" />
+                <line x1="100" y1="68" x2="100" y2="195" />
+                <line x1="60" y1="78" x2="140" y2="78" />
+                <polygon points="100,135 68,125 74,185 100,195 126,185 132,125" />
+                <line x1="70" y1="145" x2="130" y2="145" />
+
+                <!-- 腕（左右） -->
+                <polygon points="60,78 42,88 48,135 68,125" />
+                <polygon points="42,88 28,140 38,185 48,135" />
+                <polygon points="140,78 158,88 152,125 132,125" />
+                <polygon points="158,88 172,140 162,185 152,135" />
+
+                <!-- 脚（左右） -->
+                <polygon points="100,195 74,185 80,225 100,235 120,225 126,185" />
+                <polygon points="80,225 100,235 94,310 72,310" />
+                <polygon points="72,310 94,310 90,385 76,385" />
+                <polygon points="120,225 100,235 106,310 128,310" />
+                <polygon points="128,310 106,310 110,385 124,385" />
+
+                <!-- 関節ノード -->
+                <g fill="#00e5ff" stroke="none">
+                  <circle cx="60" cy="78" r="3" />
+                  <circle cx="140" cy="78" r="3" />
+                  <circle cx="80" cy="225" r="3" />
+                  <circle cx="120" cy="225" r="3" />
+                </g>
+              </g>
+
+              <!-- スキャン線 -->
+              <line class="scan-line" x1="10" y1="0" x2="190" y2="0" stroke="rgba(0, 229, 255, 0.8)" stroke-width="2" />
+            </svg>
+          </div>
+          <div class="body-stage-hint">SYSTEM READY</div>
         </div>
 
       </section>
-
-
-      <!-- =================================================
-           EXERCISES SCREEN
-      ================================================== -->
-
-      <section
-        id="exercisesScreen"
-        class="screen"
-      >
-
-        <div class="screen-header">
-
-          <div>
-
-            <span class="eyebrow">
-              EXERCISE DATABASE
-            </span>
-
-            <h2>
-              EXERCISES
-            </h2>
-
-          </div>
-
-        </div>
-
-
-        <div class="exercise-filter">
-
-          <button
-            class="filter-button active"
-            data-category="all"
-            type="button"
-          >
-            ALL
-          </button>
-
-          <button
-            class="filter-button"
-            data-category="胸"
-            type="button"
-          >
-            CHEST
-          </button>
-
-          <button
-            class="filter-button"
-            data-category="背中"
-            type="button"
-          >
-            BACK
-          </button>
-
-          <button
-            class="filter-button"
-            data-category="肩"
-            type="button"
-          >
-            SHOULDER
-          </button>
-
-          <button
-            class="filter-button"
-            data-category="腕"
-            type="button"
-          >
-            ARMS
-          </button>
-
-          <button
-            class="filter-button"
-            data-category="脚"
-            type="button"
-          >
-            LEGS
-          </button>
-
-          <button
-            class="filter-button"
-            data-category="腹"
-            type="button"
-          >
-            ABS
-          </button>
-
-        </div>
-
-
-        <div
-          id="exerciseDatabaseList"
-          class="exercise-database-list"
-        >
-
-          <!-- JavaScriptで生成 -->
-
-        </div>
-
-      </section>
-
     </main>
 
-
-    <!-- ===================================================
-         BOTTOM NAVIGATION
-    ==================================================== -->
-
+    <!-- 下部ナビゲーション -->
     <nav class="bottom-nav">
-
-      <button
-        class="nav-button active"
-        data-screen="homeScreen"
-        type="button"
-      >
-
-        <span>
-          🏠
-        </span>
-
-        <small>
-          HOME
-        </small>
-
-      </button>
-
-
-      <button
-        class="nav-button"
-        data-screen="workoutScreen"
-        type="button"
-      >
-
-        <span>
-          🏋️
-        </span>
-
-        <small>
-          WORKOUT
-        </small>
-
-      </button>
-
-
-      <button
-        class="nav-button"
-        data-screen="statsScreen"
-        type="button"
-      >
-
-        <span>
-          📊
-        </span>
-
-        <small>
-          STATS
-        </small>
-
-      </button>
-
-
-      <button
-        class="nav-button"
-        data-screen="historyScreen"
-        type="button"
-      >
-
-        <span>
-          📅
-        </span>
-
-        <small>
-          HISTORY
-        </small>
-
-      </button>
-
-
-      <button
-        class="nav-button"
-        data-screen="exercisesScreen"
-        type="button"
-      >
-
-        <span>
-          🧩
-        </span>
-
-        <small>
-          EXERCISES
-        </small>
-
-      </button>
-
+      <button class="nav-button active"><span>🏠</span><small>ホーム</small></button>
+      <button class="nav-button"><span>💪</span><small>筋トレ</small></button>
+      <button class="nav-button"><span>📊</span><small>記録</small></button>
+      <button class="nav-button"><span>👤</span><small>ボディ</small></button>
+      <button class="nav-button"><span>⚙️</span><small>設定</small></button>
     </nav>
-
-
-    <!-- ===================================================
-         REST TIMER
-    ==================================================== -->
-
-    <div
-      id="restTimer"
-      class="modal hidden"
-    >
-
-      <div class="modal-backdrop"></div>
-
-      <div class="modal-card timer-card">
-
-        <span class="eyebrow" id="timerStatus">
-          REST TIMER
-        </span>
-
-        <strong id="timerDisplay">
-          01:30
-        </strong>
-
-        <div class="timer-actions">
-
-          <button
-            id="timerMinus"
-            type="button"
-          >
-            −30
-          </button>
-
-          <button
-            id="timerSkip"
-            type="button"
-          >
-            SKIP
-          </button>
-
-          <button
-            id="timerPlus"
-            type="button"
-          >
-            +30
-          </button>
-
-        </div>
-
-      </div>
-
-    </div>
-
-
-    <!-- ===================================================
-         BODY PROFILE MODAL
-    ==================================================== -->
-
-    <div id="bodyProfileModal" class="modal hidden">
-      <div class="modal-backdrop"></div>
-      <div class="modal-card body-profile-modal-card">
-        <div class="modal-header">
-          <div>
-            <span class="eyebrow">BODY PROFILE // SETUP</span>
-            <h3>身体プロフィール</h3>
-            <small>保存したデータをトップ画面とコーチ計算に使用します。</small>
-          </div>
-          <button id="closeBodyProfileModal" type="button">×</button>
-        </div>
-
-        <div class="profile-form-grid">
-          <label>年齢 <span>AGE</span><input id="profileAgeInput" type="number" min="13" max="100" inputmode="numeric" placeholder="30"></label>
-          <label>身長 <span>HEIGHT / CM</span><input id="profileHeightInput" type="number" min="100" max="250" step="0.1" inputmode="decimal" placeholder="170"></label>
-          <label>体重 <span>WEIGHT / KG</span><input id="profileWeightInput" type="number" min="20" max="300" step="0.1" inputmode="decimal" placeholder="70"></label>
-          <div class="profile-bmi-preview"><span>BMI INDEX</span><strong id="profileBMIValue">--</strong><small id="profileBMIStatus">入力すると自動計算</small></div>
-        </div>
-
-        <label class="profile-save-check">
-          <input id="profileSaveCheck" type="checkbox">
-          <span><b>SAVE & ACTIVATE</b><small>次回からこの身体データをベースに表示します。</small></span>
-        </label>
-        <button id="saveBodyProfileButton" class="primary-button profile-save-button" type="button">SAVE PROFILE</button>
-      </div>
-    </div>
-
-    <!-- ===================================================
-         BODY DATA MODAL
-    ==================================================== -->
-
-    <div
-      id="bodyDataModal"
-      class="modal hidden"
-    >
-
-      <div class="modal-backdrop"></div>
-
-      <div class="modal-card">
-
-        <div class="modal-header">
-
-          <h3>
-            BODY STATUS
-          </h3>
-
-          <button
-            id="closeBodyDataModal"
-            type="button"
-          >
-            ×
-          </button>
-
-        </div>
-
-
-        <label>
-          WEIGHT
-
-          <input
-            id="bodyWeightInput"
-            type="number"
-            step="0.1"
-            inputmode="decimal"
-            placeholder="70.0"
-          >
-
-        </label>
-
-
-        <label>
-          BODY FAT %
-
-          <input
-            id="bodyFatInput"
-            type="number"
-            step="0.1"
-            inputmode="decimal"
-            placeholder="15.0"
-          >
-
-        </label>
-
-
-        <label>
-          MUSCLE MASS
-
-          <input
-            id="muscleMassInput"
-            type="number"
-            step="0.1"
-            inputmode="decimal"
-            placeholder="55.0"
-          >
-
-        </label>
-
-
-        <button
-          id="saveBodyDataButton"
-          class="primary-button"
-          type="button"
-        >
-          SAVE
-        </button>
-
-      </div>
-
-    </div>
-
-
-    <!-- ===================================================
-         EXERCISE SELECT MODAL
-    ==================================================== -->
-
-    <div
-      id="exerciseModal"
-      class="modal hidden"
-    >
-
-      <div class="modal-backdrop"></div>
-
-      <div class="modal-card">
-
-        <div class="modal-header">
-
-          <h3>
-            ADD EXERCISE
-          </h3>
-
-          <button
-            id="closeExerciseModal"
-            type="button"
-          >
-            ×
-          </button>
-
-        </div>
-
-
-        <input
-          id="exerciseSearchInput"
-          type="search"
-          placeholder="種目を検索..."
-        >
-
-
-        <div
-          id="exerciseSelectList"
-          class="exercise-select-list"
-        >
-
-          <!-- JavaScriptで生成 -->
-
-        </div>
-
-      </div>
-
-    </div>
-
   </div>
 
-
-  <script src="./app.js"></script>
-
+  <script src="app.js"></script>
 </body>
 </html>
