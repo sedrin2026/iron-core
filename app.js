@@ -30,78 +30,70 @@ document.addEventListener('DOMContentLoaded', () => {
   // 全体をまとめるグループ
   const humanGroup = new THREE.Group();
 
-  // --- 解剖学的によりリアルな筋肉質男性の構築 ---
-
-  // ① 頭部（リアルな頭蓋・顔の形状）
-  const headGeo = new THREE.SphereGeometry(0.35, 20, 20);
+  // ① 頭部
+  const headGeo = new THREE.SphereGeometry(0.35, 16, 16);
   headGeo.scale(0.85, 1.2, 0.95);
   const head = new THREE.Mesh(headGeo, wireMaterial);
   head.position.y = 2.15;
   humanGroup.add(head);
 
-  // ② 首・僧帽筋
-  const neckGeo = new THREE.CylinderGeometry(0.18, 0.22, 0.4, 16);
+  // ② 首
+  const neckGeo = new THREE.CylinderGeometry(0.18, 0.22, 0.4, 12);
   const neck = new THREE.Mesh(neckGeo, wireMaterial);
   neck.position.y = 1.72;
   humanGroup.add(neck);
 
-  // ③ 胸郭・大胸筋（逆三角形の広い胸板）
-  const chestGeo = new THREE.CylinderGeometry(0.75, 0.52, 1.0, 24, 8);
+  // ③ 胸郭・大胸筋
+  const chestGeo = new THREE.CylinderGeometry(0.75, 0.52, 1.0, 18, 6);
   chestGeo.scale(1.2, 1, 0.8);
   const chest = new THREE.Mesh(chestGeo, brightMaterial);
   chest.position.y = 1.15;
   humanGroup.add(chest);
 
-  // ④ 腹部（引き締まったウエストとシックスパックの起伏）
-  const absGeo = new THREE.CylinderGeometry(0.5, 0.45, 0.75, 20, 8);
+  // ④ 腹部
+  const absGeo = new THREE.CylinderGeometry(0.5, 0.45, 0.75, 16, 6);
   absGeo.scale(1.0, 1, 0.7);
   const abs = new THREE.Mesh(absGeo, wireMaterial);
   abs.position.y = 0.38;
   humanGroup.add(abs);
 
-  // ⑤ 骨盤・臀部
-  const pelvisGeo = new THREE.CylinderGeometry(0.48, 0.42, 0.5, 20, 6);
+  // ⑤ 骨盤
+  const pelvisGeo = new THREE.CylinderGeometry(0.48, 0.42, 0.5, 16, 4);
   pelvisGeo.scale(1.05, 1, 0.75);
   const pelvis = new THREE.Mesh(pelvisGeo, wireMaterial);
   pelvis.position.y = -0.18;
   humanGroup.add(pelvis);
 
-  // ⑥ 腕パーツ（左右対称：肩・上腕二頭筋・前腕）
+  // ⑥ 腕パーツ（左右：肩・上腕二頭筋・前腕）
   [-1, 1].forEach(side => {
-    // 肩（メロン肩・三角筋）
-    const shoulderGeo = new THREE.SphereGeometry(0.32, 16, 16);
+    // 肩
+    const shoulderGeo = new THREE.SphereGeometry(0.32, 14, 14);
     shoulderGeo.scale(1.1, 1.2, 1.1);
     const shoulder = new THREE.Mesh(shoulderGeo, brightMaterial);
     shoulder.position.set(side * 0.88, 1.48, 0);
     humanGroup.add(shoulder);
 
-    // 上腕（上腕二頭筋 / 力こぶ）
-    const armGeo = new THREE.CylinderGeometry(0.22, 0.16, 0.85, 16, 8);
+    // 上腕（上腕二頭筋）
+    const armGeo = new THREE.CylinderGeometry(0.22, 0.16, 0.85, 14, 6);
     armGeo.scale(1.0, 1.0, 1.1);
     const arm = new THREE.Mesh(armGeo, wireMaterial);
     arm.position.set(side * 0.98, 0.88, 0.05);
     arm.rotation.z = side * -0.15;
     humanGroup.add(arm);
 
-    // 前腕（たくましい前腕筋群）
-    const forearmGeo = new THREE.CylinderGeometry(0.2, 0.12, 0.85, 16, 8);
+    // 前腕
+    const forearmGeo = new THREE.CylinderGeometry(0.2, 0.12, 0.85, 14, 6);
     forearmGeo.scale(1.1, 1.0, 0.95);
     const forearm = new THREE.Mesh(forearmGeo, wireMaterial);
     forearm.position.set(side * 1.12, 0.08, 0.08);
     forearm.rotation.z = side * -0.08;
     humanGroup.add(forearm);
-
-    // 手首・手のひら
-    const handGeo = new THREE.BoxGeometry(0.12, 0.22, 0.08);
-    const hand = new THREE.Mesh(handGeo, wireMaterial);
-    hand.position.set(side * 1.22, -0.42, 0.1);
-    humanGroup.add(hand);
   });
 
-  // ⑦ 脚パーツ（左右対称：太もも・ふくらはぎ）
+  // ⑦ 脚パーツ（左右：太もも・ふくらはぎ）
   [-1, 1].forEach(side => {
-    // 太もも（大腿四頭筋）
-    const thighGeo = new THREE.CylinderGeometry(0.32, 0.22, 1.1, 20, 10);
+    // 太もも
+    const thighGeo = new THREE.CylinderGeometry(0.32, 0.22, 1.1, 16, 8);
     thighGeo.scale(1.1, 1, 1.1);
     const thigh = new THREE.Mesh(thighGeo, wireMaterial);
     thigh.position.set(side * 0.35, -0.82, 0);
@@ -109,20 +101,13 @@ document.addEventListener('DOMContentLoaded', () => {
     humanGroup.add(thigh);
 
     // ふくらはぎ
-    const calfGeo = new THREE.CylinderGeometry(0.22, 0.13, 1.15, 18, 10);
+    const calfGeo = new THREE.CylinderGeometry(0.22, 0.13, 1.15, 16, 8);
     calfGeo.scale(1.05, 1, 1.1);
     const calf = new THREE.Mesh(calfGeo, wireMaterial);
     calf.position.set(side * 0.38, -1.92, 0);
     humanGroup.add(calf);
-
-    // 足首・足先
-    const footGeo = new THREE.BoxGeometry(0.16, 0.12, 0.35);
-    const foot = new THREE.Mesh(footGeo, wireMaterial);
-    foot.position.set(side * 0.38, -2.55, 0.08);
-    humanGroup.add(foot);
   });
 
-  // 全体を少し下へ調整して画面中央に配置
   humanGroup.position.y = 0.3;
   scene.add(humanGroup);
 
@@ -146,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
   gridHelper.material.transparent = true;
   scene.add(gridHelper);
 
-  // 4. アニメーション（ゆっくり回転）
+  // 4. アニメーション
   function animate() {
     requestAnimationFrame(animate);
     humanGroup.rotation.y += 0.005;
