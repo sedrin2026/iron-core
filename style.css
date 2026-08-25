@@ -92,12 +92,12 @@ main { padding: 8px; }
 
 .flip-hint { font-size: 10px; color: var(--accent); margin-bottom: 4px; opacity: 0.8; }
 
-/* Flip 3D アニメーション（画面いっぱいに超拡大！） */
+/* Flip 3D アニメーション */
 .flip-container {
   perspective: 1000px;
-  width: 90vw;       /* スマホ画面の横幅90%を使用 */
-  max-width: 340px;  /* 最大幅を大きく拡張 */
-  height: 500px;     /* 縦幅を500pxに大幅引き上げ */
+  width: 90vw;
+  max-width: 340px;
+  height: 500px;
   position: relative;
 }
 
@@ -115,13 +115,14 @@ main { padding: 8px; }
 
 .front, .back {
   backface-visibility: hidden;
+  -webkit-backface-visibility: hidden; /* Safari対策 */
   position: absolute;
   top: 0; left: 0;
   width: 100%; height: 100%;
   display: flex; justify-content: center; align-items: center;
 }
 
-/* 画像を枠いっぱいに強制拡大 */
+/* 画像設定 */
 .front img, .back img {
   width: 100% !important;
   height: 100% !important;
@@ -131,6 +132,14 @@ main { padding: 8px; }
 }
 
 .back { transform: rotateY(180deg); }
+
+/* ★★★ ここが命！裏返っている時は表面のタップ判定を殺す制御 ★★★ */
+.flip-container:not(.flipped) .back {
+  pointer-events: none; /* 表面表示時は裏面のタップを無効化 */
+}
+.flip-container.flipped .front {
+  pointer-events: none; /* 裏面表示時は表面のタップを完全に無効化（「胸」暴発の完全撃滅） */
+}
 
 /* タップ判定透明エリア */
 .touch-zone {
