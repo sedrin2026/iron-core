@@ -1,40 +1,209 @@
-// 各部位の筋トレ種目データ
-const exercises = {
-  '胸': ['ベンチプレス', 'ダンベルフライ', 'プッシュアップ', 'インクラインプレス'],
-  '腹筋': ['クランチ', 'レッグレイズ', 'プランク', 'アブローラー'],
-  '腕': ['アームカール', '三頭筋プレスダウン', 'ハンマーカール'],
-  '脚': ['バーベルスクワット', 'レッグプレス', 'ランジ', 'カーフレイズ'],
-  '広背筋・肩甲骨周り': ['懸垂（チンニング）', 'ラットプルダウン', 'ベントオーバーロー', 'シーテッドロー'],
-  '脊柱起立筋（背筋）': ['デッドリフト', 'バックエクステンション'],
-  '臀部（お尻）': ['ヒップスラスト', 'ブルガリアンスクワット']
-};
-
-// 表裏の回転切り替え
-function toggleFlip() {
-  const container = document.getElementById('flip-container');
-  container.classList.toggle('flipped');
+:root {
+  --bg: #05080c;
+  --panel: #0d131d;
+  --line: rgba(255, 255, 255, 0.08);
+  --text: #f4f7fb;
+  --muted: #6c7a8c;
+  --accent: #00e5ff;
+  --accent-2: #0088ff;
+  --nav-height: 56px;
 }
 
-// 部位タップ時の種目表示モーダル
-function showExercises(part) {
-  const modal = document.getElementById('exercise-modal');
-  const title = document.getElementById('modal-title');
-  const list = document.getElementById('exercise-list');
-
-  title.innerText = `【 ${part} 】の推奨メニュー`;
-  list.innerHTML = '';
-
-  const partExercises = exercises[part] || [];
-  partExercises.forEach(item => {
-    const li = document.createElement('li');
-    li.innerText = `・ ${item}`;
-    list.appendChild(li);
-  });
-
-  modal.style.display = 'flex';
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-// モーダル閉じる
-function closeModal() {
-  document.getElementById('exercise-modal').style.display = 'none';
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  min-height: 100vh;
 }
+
+#app {
+  max-width: 600px;
+  margin: 0 auto;
+  padding-bottom: calc(var(--nav-height) + 20px);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ヘッダー */
+.app-header {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(5, 8, 12, 0.85);
+  backdrop-filter: blur(12px);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.brand { display: flex; align-items: center; gap: 8px; }
+.brand-mark {
+  width: 28px; height: 28px;
+  display: grid; place-items: center;
+  border-radius: 6px; color: #000;
+  font-size: 11px; font-weight: 900;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
+}
+.brand-text strong { font-size: 12px; letter-spacing: 0.1em; }
+.brand-text span { color: var(--muted); font-size: 8px; display: block; }
+
+.icon-button {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: var(--panel); border: 1px solid var(--line); color: var(--text);
+}
+
+main { padding: 8px; }
+
+/* プロフィール */
+.body-profile-panel {
+  margin-bottom: 8px; padding: 8px;
+  border: 1px solid rgba(0, 229, 255, 0.15);
+  background: rgba(13, 19, 29, 0.7); border-radius: 10px;
+}
+.inline-profile-grid { display: grid; grid-template-columns: repeat(4, 1fr) auto; gap: 6px; }
+.inline-profile-field { padding: 4px 6px; border: 1px solid var(--line); background: rgba(0, 0, 0, 0.4); border-radius: 6px; }
+.inline-profile-field span { font-size: 9px; color: var(--accent); display: block; }
+.inline-profile-field input { width: 100%; border: 0; background: transparent; color: #fff; font-size: 13px; font-weight: bold; outline: none; }
+.inline-profile-save { padding: 0 12px; border-radius: 6px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #000; font-size: 11px; font-weight: bold; border: 0; }
+
+/* 3Dカードステージ */
+.wireframe-card {
+  position: relative;
+  border: 1px solid rgba(0, 229, 255, 0.25);
+  border-radius: 14px;
+  background: #020508;
+  padding: 8px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.flip-hint { font-size: 10px; color: var(--accent); margin-bottom: 4px; opacity: 0.8; }
+
+/* Flip 3D アニメーション（画面いっぱいに超拡大！） */
+.flip-container {
+  perspective: 1000px;
+  width: 90vw;       /* スマホ画面の横幅90%を使用 */
+  max-width: 340px;  /* 最大幅を大きく拡張 */
+  height: 500px;     /* 縦幅を500pxに大幅引き上げ */
+  position: relative;
+}
+
+.flip-container.flipped .flipper {
+  transform: rotateY(180deg);
+}
+
+.flipper {
+  transition: 0.6s transform ease-in-out;
+  transform-style: preserve-3d;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.front, .back {
+  backface-visibility: hidden;
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: flex; justify-content: center; align-items: center;
+}
+
+/* 画像を枠いっぱいに強制拡大 */
+.front img, .back img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain;
+  border-radius: 8px;
+  filter: drop-shadow(0 0 12px rgba(0, 229, 255, 0.4));
+}
+
+.back { transform: rotateY(180deg); }
+
+/* タップ判定透明エリア */
+.touch-zone {
+  position: absolute;
+  background: rgba(0, 229, 255, 0.05);
+  border: 1px dashed rgba(0, 229, 255, 0.2);
+  border-radius: 50%;
+  z-index: 10;
+}
+.touch-zone:active { background: rgba(0, 229, 255, 0.4); }
+
+/* 表面の各部位位置 */
+.chest { top: 18%; left: 30%; width: 40%; height: 12%; }
+.abs { top: 31%; left: 35%; width: 30%; height: 14%; }
+.arms-l { top: 20%; left: 8%; width: 18%; height: 25%; }
+.arms-r { top: 20%; right: 8%; width: 18%; height: 25%; }
+.legs { top: 46%; left: 25%; width: 50%; height: 45%; }
+
+/* 背面の各部位位置 */
+.upper-back { top: 18%; left: 25%; width: 50%; height: 18%; }
+.lower-back { top: 37%; left: 30%; width: 40%; height: 12%; }
+.glutes { top: 50%; left: 30%; width: 40%; height: 12%; }
+
+/* ボタン ＆ タグ */
+.rotate-btn {
+  margin-top: 8px;
+  padding: 6px 16px;
+  background: rgba(0, 229, 255, 0.15);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.status-tag {
+  margin-top: 6px; font-size: 9px; color: var(--accent);
+  letter-spacing: 0.15em; padding: 3px 12px;
+  background: rgba(0, 229, 255, 0.08); border: 1px solid rgba(0, 229, 255, 0.25);
+  border-radius: 20px;
+}
+
+/* ポップアップ（モーダル） */
+.modal {
+  display: none; position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px);
+  z-index: 100; justify-content: center; align-items: center;
+}
+
+.modal-content {
+  background: #0d131d; border: 1px solid var(--accent);
+  border-radius: 12px; padding: 20px; width: 80%; max-width: 300px;
+  text-align: center; box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
+}
+
+.modal-content h3 { color: var(--accent); margin-bottom: 12px; font-size: 16px; }
+.modal-content ul { list-style: none; margin-bottom: 15px; text-align: left; }
+.modal-content li { padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 13px; color: #fff; }
+
+.close-btn {
+  background: var(--accent); border: 0; padding: 6px 18px;
+  color: #000; font-weight: bold; border-radius: 6px; font-size: 12px;
+}
+
+/* フッター */
+.bottom-nav {
+  position: fixed; left: 0; right: 0; bottom: 0;
+  max-width: 600px; margin: 0 auto; height: var(--nav-height);
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  background: rgba(5, 8, 12, 0.92); backdrop-filter: blur(12px); border-top: 1px solid var(--line);
+}
+.nav-button { display: flex; flex-direction: column; align-items: center; justify-content: center; background: transparent; color: var(--muted); border: 0; }
+.nav-button span { font-size: 16px; }
+.nav-button small { font-size: 8px; font-weight: bold; margin-top: 2px; }
+.nav-button.active { color: var(--accent); }
