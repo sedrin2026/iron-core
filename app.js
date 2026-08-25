@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('IRON CORE Real Body Model Loaded.');
+  console.log('IRON CORE Muscular Model Initialized.');
   
   const saveBtn = document.querySelector('.inline-profile-save');
   if (saveBtn) {
