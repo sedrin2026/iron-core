@@ -1,8 +1,6 @@
-// アプリ起動時の簡易スクリプト
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('IRON CORE System Initialized.');
+  console.log('IRON CORE Real Body Model Loaded.');
   
-  // 保存ボタンのアニメーション効果
   const saveBtn = document.querySelector('.inline-profile-save');
   if (saveBtn) {
     saveBtn.addEventListener('click', () => {
