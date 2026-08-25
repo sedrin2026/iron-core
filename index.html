@@ -21,35 +21,35 @@
       <button class="icon-button">⚙️</button>
     </header>
 
-    <!-- メイン表示エリア -->
+    <!-- メインコンテンツエリア -->
     <main>
-      <section class="screen active future-home-screen">
+      <section class="screen active">
         
-        <!-- プロフィール簡易表示 -->
+        <!-- プロフィールパネル -->
         <div class="body-profile-panel">
           <div class="inline-profile-grid">
             <div class="inline-profile-field">
               <span>身長</span>
-              <input type="number" value="170" readonly>
+              <input type="number" value="170">
             </div>
             <div class="inline-profile-field">
               <span>体重</span>
-              <input type="number" value="65" readonly>
+              <input type="number" value="65">
             </div>
             <div class="inline-profile-field">
               <span>体脂肪</span>
-              <input type="number" value="15" readonly>
+              <input type="number" value="15">
             </div>
             <div class="inline-profile-field">
               <span>BMI</span>
               <input type="number" value="22.5" readonly>
             </div>
-            <button class="inline-profile-save">編集</button>
+            <button class="inline-profile-save">保存</button>
           </div>
         </div>
 
-        <!-- ワイヤーフレーム表示ステージ -->
-        <div class="body-core-stage single-body-stage">
+        <!-- 3D風サイバーワイヤーフレーム表示領域 -->
+        <div class="wireframe-card">
           <div class="wireframe-container">
             <svg class="cyber-wireframe" viewBox="0 0 200 420" xmlns="http://www.w3.org/2000/svg">
               <defs>
@@ -89,7 +89,7 @@
                 <polygon points="120,225 100,235 106,310 128,310" />
                 <polygon points="128,310 106,310 110,385 124,385" />
 
-                <!-- 関節ノード -->
+                <!-- 光る関節ポイント -->
                 <g fill="#00e5ff" stroke="none">
                   <circle cx="60" cy="78" r="3" />
                   <circle cx="140" cy="78" r="3" />
@@ -98,17 +98,17 @@
                 </g>
               </g>
 
-              <!-- スキャン線 -->
+              <!-- スキャンレーザーアニメーション -->
               <line class="scan-line" x1="10" y1="0" x2="190" y2="0" stroke="rgba(0, 229, 255, 0.8)" stroke-width="2" />
             </svg>
           </div>
-          <div class="body-stage-hint">SYSTEM READY</div>
+          <div class="status-tag">SYSTEM READY</div>
         </div>
 
       </section>
     </main>
 
-    <!-- 下部ナビゲーション -->
+    <!-- フッターナビゲーション -->
     <nav class="bottom-nav">
       <button class="nav-button active"><span>🏠</span><small>ホーム</small></button>
       <button class="nav-button"><span>💪</span><small>筋トレ</small></button>
