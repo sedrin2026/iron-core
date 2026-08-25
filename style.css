@@ -62,11 +62,11 @@ html, body {
   background: var(--panel); border: 1px solid var(--line); color: var(--text);
 }
 
-main { padding: 12px; }
+main { padding: 8px; }
 
 /* プロフィール */
 .body-profile-panel {
-  margin-bottom: 12px; padding: 8px;
+  margin-bottom: 8px; padding: 8px;
   border: 1px solid rgba(0, 229, 255, 0.15);
   background: rgba(13, 19, 29, 0.7); border-radius: 10px;
 }
@@ -82,7 +82,7 @@ main { padding: 12px; }
   border: 1px solid rgba(0, 229, 255, 0.25);
   border-radius: 14px;
   background: #020508;
-  padding: 12px;
+  padding: 8px 4px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -90,14 +90,14 @@ main { padding: 12px; }
   overflow: hidden;
 }
 
-.flip-hint { font-size: 10px; color: var(--accent); margin-bottom: 6px; opacity: 0.8; }
+.flip-hint { font-size: 10px; color: var(--accent); margin-bottom: 4px; opacity: 0.8; }
 
-/* Flip 3D アニメーション（サイズ固定で収める） */
+/* Flip 3D アニメーション（画面いっぱいに超拡大！） */
 .flip-container {
   perspective: 1000px;
-  width: 100%;
-  max-width: 220px;
-  height: 350px;
+  width: 90vw;       /* スマホ画面の横幅90%を使用 */
+  max-width: 340px;  /* 最大幅を大きく拡張 */
+  height: 500px;     /* 縦幅を500pxに大幅引き上げ */
   position: relative;
 }
 
@@ -121,17 +121,18 @@ main { padding: 12px; }
   display: flex; justify-content: center; align-items: center;
 }
 
+/* 画像を枠いっぱいに強制拡大 */
 .front img, .back img {
-  max-width: 100%;
-  max-height: 100%;
+  width: 100% !important;
+  height: 100% !important;
   object-fit: contain;
   border-radius: 8px;
-  filter: drop-shadow(0 0 10px rgba(0, 229, 255, 0.4));
+  filter: drop-shadow(0 0 12px rgba(0, 229, 255, 0.4));
 }
 
 .back { transform: rotateY(180deg); }
 
-/* タップ判定透明エリア (Touch Zones) */
+/* タップ判定透明エリア */
 .touch-zone {
   position: absolute;
   background: rgba(0, 229, 255, 0.05);
@@ -155,7 +156,7 @@ main { padding: 12px; }
 
 /* ボタン ＆ タグ */
 .rotate-btn {
-  margin-top: 10px;
+  margin-top: 8px;
   padding: 6px 16px;
   background: rgba(0, 229, 255, 0.15);
   border: 1px solid var(--accent);
