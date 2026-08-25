@@ -6,8 +6,6 @@
   <title>IRON CORE</title>
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="style.css">
-  <!-- 超重要：これがないと3Dが動きませんでした！ -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
   <div id="app">
@@ -50,10 +48,13 @@
           </div>
         </div>
 
-        <!-- 本物の3Dワイヤーフレーム表示領域 -->
-        <div class="wireframe-card">
-          <div id="canvas-container" class="wireframe-container"></div>
-          <div class="status-tag">STATUS: 100% | SCAN MODE: ACTIVE</div>
+        <!-- ホログラム画像表示エリア（ここでサイズや大きさを自由に変更できます） -->
+        <div class="wireframe-card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: #050b14; padding: 15px; border-radius: 12px; border: 1px solid #00e5ff33;">
+          
+          <!-- 画像を小さくしたい時は max-width の数値（例: 260px など）を小さくしてね！ -->
+          <img src="hologram.png" alt="IRON CORE Hologram" style="width: 100%; max-width: 280px; height: auto; border-radius: 8px; box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);">
+          
+          <div class="status-tag" style="margin-top: 10px;">STATUS: 100% | SCAN MODE: ACTIVE</div>
         </div>
 
       </section>
@@ -68,7 +69,5 @@
       <button class="nav-button"><span>⚙️</span><small>設定</small></button>
     </nav>
   </div>
-
-  <script src="app.js"></script>
 </body>
 </html>
