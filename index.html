@@ -48,17 +48,54 @@
           </div>
         </div>
 
-        <!-- 添付画像の最適化表示エリア -->
-        <div class="wireframe-card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: #050b14; padding: 15px; border-radius: 12px; border: 1px solid #00e5ff33;">
+        <!-- ホログラム回転 ＆ 部位タップエリア -->
+        <div class="wireframe-card">
+          <div class="flip-hint">💡 タップで表裏回転 / 部位タップで種目表示</div>
           
-          <!-- GitHub上の hologram.png を読み込み。小さく見せるため max-width を 200px に設定！ -->
-          <img src="hologram.png" alt="IRON CORE Model" style="width: 100%; max-width: 200px; height: auto; border-radius: 8px; filter: drop-shadow(0 0 12px rgba(0, 229, 255, 0.4));">
+          <!-- 3D回転用コンテナ -->
+          <div class="flip-container" id="flip-container">
+            <div class="flipper">
+              
+              <!-- 表面：正面モデル -->
+              <div class="front">
+                <img src="hologram.png" alt="Front Model">
+                <!-- タップ判定ボタン（透明） -->
+                <div class="touch-zone chest" onclick="showExercises('胸')"></div>
+                <div class="touch-zone abs" onclick="showExercises('腹筋')"></div>
+                <div class="touch-zone arms-l" onclick="showExercises('腕')"></div>
+                <div class="touch-zone arms-r" onclick="showExercises('腕')"></div>
+                <div class="touch-zone legs" onclick="showExercises('脚')"></div>
+              </div>
+
+              <!-- 裏面：背面モデル -->
+              <div class="back">
+                <img src="hologram_back.jpg" alt="Back Model">
+                <!-- タップ判定ボタン（透明） -->
+                <div class="touch-zone upper-back" onclick="showExercises('背中上部')"></div>
+                <div class="touch-zone lower-back" onclick="showExercises('腰・背筋')"></div>
+                <div class="touch-zone glutes" onclick="showExercises('臀部')"></div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- 回転ボタン -->
+          <button class="rotate-btn" onclick="toggleFlip()">🔄 表/裏 切り替え</button>
           
-          <div class="status-tag" style="margin-top: 10px;">STATUS: 100% | SCAN MODE: ACTIVE</div>
+          <div class="status-tag">STATUS: 100% | SCAN MODE: ACTIVE</div>
         </div>
 
       </section>
     </main>
+
+    <!-- 部位タップ時の筋トレ種目モーダル -->
+    <div id="exercise-modal" class="modal">
+      <div class="modal-content">
+        <h3 id="modal-title">部位名</h3>
+        <ul id="exercise-list"></ul>
+        <button class="close-btn" onclick="closeModal()">閉じる</button>
+      </div>
+    </div>
 
     <!-- フッターナビゲーション -->
     <nav class="bottom-nav">
@@ -69,5 +106,7 @@
       <button class="nav-button"><span>⚙️</span><small>設定</small></button>
     </nav>
   </div>
+
+  <script src="app.js"></script>
 </body>
 </html>
