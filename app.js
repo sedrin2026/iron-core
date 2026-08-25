@@ -15,20 +15,20 @@ document.addEventListener('DOMContentLoaded', () => {
   // 2. ホログラム人体のグループを作成
   const humanGroup = new THREE.Group();
 
-  // マテリアル（青く発光する網目）
+  // 基本骨格用マテリアル
   const wireMaterial = new THREE.MeshBasicMaterial({
-    color: 0x00e5ff,
+    color: 0x00aaff,
     wireframe: true,
     transparent: true,
-    opacity: 0.8
+    opacity: 0.5
   });
 
-  // 強調表示用マテリアル（筋肉部分をより高密度・明るく）
+  // 筋肉超強調用マテリアル（明るく光る発光カラー）
   const muscleMaterial = new THREE.MeshBasicMaterial({
-    color: 0x33f0ff,
+    color: 0x00ffff,
     wireframe: true,
     transparent: true,
-    opacity: 0.9
+    opacity: 1.0
   });
 
   // 頭部
@@ -38,15 +38,15 @@ document.addEventListener('DOMContentLoaded', () => {
   head.position.y = 2.1;
   humanGroup.add(head);
 
-  // 胸部（厚い大胸筋）
-  const chestGeo = new THREE.CylinderGeometry(0.72, 0.52, 0.9, 18, 6);
-  chestGeo.scale(1.15, 1, 0.75);
-  const chest = new THREE.Mesh(chestGeo, wireMaterial);
+  // 胸部（巨大な大胸筋）
+  const chestGeo = new THREE.CylinderGeometry(0.85, 0.6, 1.0, 20, 8);
+  chestGeo.scale(1.2, 1, 0.85);
+  const chest = new THREE.Mesh(chestGeo, muscleMaterial);
   chest.position.y = 1.25;
   humanGroup.add(chest);
 
-  // 腹部（6パック）
-  const absGeo = new THREE.CylinderGeometry(0.5, 0.45, 0.7, 16, 6);
+  // 腹部
+  const absGeo = new THREE.CylinderGeometry(0.52, 0.45, 0.7, 16, 6);
   absGeo.scale(1.0, 1, 0.65);
   const abs = new THREE.Mesh(absGeo, wireMaterial);
   abs.position.y = 0.55;
@@ -59,53 +59,50 @@ document.addEventListener('DOMContentLoaded', () => {
   pelvis.position.y = 0.05;
   humanGroup.add(pelvis);
 
-  // 【腕と肩の筋肉強化パーツ】（左右）
+  // 【筋肉爆盛りアーム】（左右）
   [-1, 1].forEach(side => {
-    // 1. 三角筋（肩のデカいメロン肩）
-    const shoulderGeo = new THREE.SphereGeometry(0.36, 16, 16);
-    shoulderGeo.scale(1.1, 1.2, 1.1);
+    // 1. 巨大三角筋（巨大メロン肩）
+    const shoulderGeo = new THREE.SphereGeometry(0.48, 18, 18);
+    shoulderGeo.scale(1.2, 1.3, 1.2);
     const shoulder = new THREE.Mesh(shoulderGeo, muscleMaterial);
-    shoulder.position.set(side * 0.88, 1.5, 0);
+    shoulder.position.set(side * 0.95, 1.5, 0);
     humanGroup.add(shoulder);
 
-    // 2. 上腕骨ベース（腕の芯）
-    const armGeo = new THREE.CylinderGeometry(0.18, 0.15, 0.8, 12, 6);
+    // 2. 上腕骨ベース
+    const armGeo = new THREE.CylinderGeometry(0.2, 0.18, 0.8, 12, 6);
     const arm = new THREE.Mesh(armGeo, wireMaterial);
-    arm.position.set(side * 0.98, 0.95, 0);
-    arm.rotation.z = side * -0.2;
+    arm.position.set(side * 1.05, 0.95, 0);
+    arm.rotation.z = side * -0.22;
     humanGroup.add(arm);
 
-    // 3. 上腕二頭筋（力こぶの隆起）
-    const bicepsGeo = new THREE.SphereGeometry(0.22, 14, 14);
-    bicepsGeo.scale(0.85, 1.4, 0.95);
+    // 3. 爆コブ上腕二頭筋（力こぶ）
+    const bicepsGeo = new THREE.SphereGeometry(0.32, 16, 16);
+    bicepsGeo.scale(0.9, 1.5, 1.1);
     const biceps = new THREE.Mesh(bicepsGeo, muscleMaterial);
-    // 腕の前側に配置して力こぶを表現
-    biceps.position.set(side * 0.96, 0.95, 0.12);
-    biceps.rotation.z = side * -0.2;
+    biceps.position.set(side * 1.02, 0.95, 0.18);
+    biceps.rotation.z = side * -0.22;
     humanGroup.add(biceps);
 
-    // 4. 前腕（肘から下のたくましい前腕筋肉群・腕橈骨筋）
-    const foreArmGeo = new THREE.CylinderGeometry(0.24, 0.11, 0.85, 16, 8); // 上部を太く強調
-    foreArmGeo.scale(1.1, 1.0, 0.9);
+    // 4. 超太い前腕筋群
+    const foreArmGeo = new THREE.CylinderGeometry(0.32, 0.14, 0.9, 18, 10);
+    foreArmGeo.scale(1.2, 1.0, 1.0);
     const foreArm = new THREE.Mesh(foreArmGeo, muscleMaterial);
-    foreArm.position.set(side * 1.2, 0.18, 0);
-    foreArm.rotation.z = side * -0.15;
+    foreArm.position.set(side * 1.28, 0.15, 0);
+    foreArm.rotation.z = side * -0.18;
     humanGroup.add(foreArm);
   });
 
   // 両脚（左右）
   [-1, 1].forEach(side => {
-    // 太もも（大腿四頭筋）
-    const thighGeo = new THREE.CylinderGeometry(0.32, 0.22, 1.0, 16, 8);
-    const thigh = new THREE.Mesh(thighGeo, wireMaterial);
-    thigh.position.set(side * 0.32, -0.65, 0);
+    const thighGeo = new THREE.CylinderGeometry(0.38, 0.24, 1.0, 16, 8);
+    const thigh = new THREE.Mesh(thighGeo, muscleMaterial);
+    thigh.position.set(side * 0.35, -0.65, 0);
     thigh.rotation.z = side * -0.05;
     humanGroup.add(thigh);
 
-    // すね・ふくらはぎ
-    const calfGeo = new THREE.CylinderGeometry(0.21, 0.12, 1.1, 14, 8);
-    const calf = new THREE.Mesh(calfGeo, wireMaterial);
-    calf.position.set(side * 0.35, -1.65, 0);
+    const calfGeo = new THREE.CylinderGeometry(0.25, 0.13, 1.1, 14, 8);
+    const calf = new THREE.Mesh(calfGeo, muscleMaterial);
+    calf.position.set(side * 0.38, -1.65, 0);
     humanGroup.add(calf);
   });
 
@@ -134,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // 4. アニメーション
   function animate() {
     requestAnimationFrame(animate);
-    humanGroup.rotation.y += 0.005;
+    humanGroup.rotation.y += 0.006;
     ring1.rotation.z -= 0.003;
     ring2.rotation.z += 0.005;
     renderer.render(scene, camera);
