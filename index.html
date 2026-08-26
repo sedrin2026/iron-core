@@ -123,83 +123,44 @@
 
         <!-- BODY SCANNER -->
         <div class="body-core-stage single-body-stage" id="bodyCoreStage">
-          <div class="scanner-grid"></div>
-          <div class="scan-line"></div>
-          <div class="scan-floor"></div>
-
-          <div class="core-readout core-readout-top">
-            <span>BIOMETRIC CORE</span><strong id="coreProfileValue">OFFLINE</strong>
-          </div>
-          <div class="core-readout core-readout-left">
-            <span>BODY MASS</span><strong id="coreWeightValue">-- KG</strong>
-          </div>
-          <div class="core-readout core-readout-right">
-            <span>BMI INDEX</span><strong id="coreBMIValue">--</strong>
-          </div>
-
-          <div class="body-scan-title">TAP TO SELECT // MUSCLE ANALYSIS</div>
-
           <div class="body-view-switch" id="bodyViewSwitch" role="group" aria-label="人体表示方向">
             <button type="button" class="body-view-button active" data-body-view="front" aria-pressed="true">FRONT</button>
             <button type="button" class="body-view-button" data-body-view="back" aria-pressed="false">BACK</button>
           </div>
 
           <div class="body-model-frame single-front-model" id="wireframeBody" aria-label="正面ワイヤーフレーム人体・部位選択">
-            <div class="body-model-glow"></div>
-            <div class="body-model-grid-glow"></div>
             <div class="body-image-layer" id="bodyImageLayer">
               <img class="body-model-image" id="bodyModelImage" src="hologram.png" alt="正面を向いた水色のワイヤーフレーム人体" draggable="false">
 
-              <!-- FRONT: image-relative circular touch zones -->
+              <!-- FRONT: existing image-relative touch zones -->
               <button type="button" class="body-hotspot body-hotspot-single front-zone shoulder-left" data-view-zone="front" data-body-part="shoulders" aria-label="左肩を選択"><span>SHOULDER</span></button>
               <button type="button" class="body-hotspot body-hotspot-single front-zone shoulder-right" data-view-zone="front" data-body-part="shoulders" aria-label="右肩を選択"><span>SHOULDER</span></button>
               <button type="button" class="body-hotspot body-hotspot-single front-zone biceps-left" data-view-zone="front" data-body-part="biceps" aria-label="左上腕二頭筋を選択"><span>BICEPS</span></button>
               <button type="button" class="body-hotspot body-hotspot-single front-zone biceps-right" data-view-zone="front" data-body-part="biceps" aria-label="右上腕二頭筋を選択"><span>BICEPS</span></button>
               <button type="button" class="body-hotspot body-hotspot-single front-zone triceps-left" data-view-zone="front" data-body-part="triceps" aria-label="左上腕三頭筋を選択"><span>TRICEPS</span></button>
               <button type="button" class="body-hotspot body-hotspot-single front-zone triceps-right" data-view-zone="front" data-body-part="triceps" aria-label="右上腕三頭筋を選択"><span>TRICEPS</span></button>
-              <button type="button" class="body-hotspot body-hotspot-single front-zone forearm-left" data-view-zone="front" data-body-part="forearms" aria-label="左前腕筋群を選択"><span>FOREARM</span></button>
-              <button type="button" class="body-hotspot body-hotspot-single front-zone forearm-right" data-view-zone="front" data-body-part="forearms" aria-label="右前腕筋群を選択"><span>FOREARM</span></button>
+              <button type="button" class="body-hotspot body-hotspot-single front-zone forearm-left" data-view-zone="front" data-body-part="forearms" aria-label="左前腕を選択"><span>FOREARM</span></button>
+              <button type="button" class="body-hotspot body-hotspot-single front-zone forearm-right" data-view-zone="front" data-body-part="forearms" aria-label="右前腕を選択"><span>FOREARM</span></button>
               <button type="button" class="body-hotspot body-hotspot-single front-zone chest" data-view-zone="front" data-body-part="chest" aria-label="胸を選択"><span>CHEST</span></button>
-              <button type="button" class="body-hotspot body-hotspot-single front-zone pectoralis" data-view-zone="front" data-body-part="pectoralis" aria-label="大胸筋を選択"><span>PECTORAL</span></button>
+              <button type="button" class="body-hotspot body-hotspot-single front-zone pectoralis" data-view-zone="front" data-body-part="chest" aria-label="大胸筋を選択"><span>CHEST</span></button>
               <button type="button" class="body-hotspot body-hotspot-single front-zone abs" data-view-zone="front" data-body-part="abs" aria-label="腹筋を選択"><span>ABS</span></button>
-              <button type="button" class="body-hotspot body-hotspot-single front-zone quadriceps-left" data-view-zone="front" data-body-part="quadriceps" aria-label="左大腿四頭筋を選択"><span>QUAD</span></button>
-              <button type="button" class="body-hotspot body-hotspot-single front-zone quadriceps-right" data-view-zone="front" data-body-part="quadriceps" aria-label="右大腿四頭筋を選択"><span>QUAD</span></button>
+              <button type="button" class="body-hotspot body-hotspot-single front-zone quadriceps-left" data-view-zone="front" data-body-part="quadriceps" aria-label="左大腿四頭筋を選択"><span>QUADS</span></button>
+              <button type="button" class="body-hotspot body-hotspot-single front-zone quadriceps-right" data-view-zone="front" data-body-part="quadriceps" aria-label="右大腿四頭筋を選択"><span>QUADS</span></button>
 
-              <!-- BACK: image-relative circular touch zones -->
+              <!-- BACK -->
               <button type="button" class="body-hotspot body-hotspot-single back-zone neck" data-view-zone="back" data-body-part="neck" aria-label="首を選択"><span>NECK</span></button>
               <button type="button" class="body-hotspot body-hotspot-single back-zone traps-left" data-view-zone="back" data-body-part="traps" aria-label="左僧帽筋を選択"><span>TRAPS</span></button>
               <button type="button" class="body-hotspot body-hotspot-single back-zone traps-right" data-view-zone="back" data-body-part="traps" aria-label="右僧帽筋を選択"><span>TRAPS</span></button>
               <button type="button" class="body-hotspot body-hotspot-single back-zone lats-left" data-view-zone="back" data-body-part="lats" aria-label="左広背筋を選択"><span>LATS</span></button>
               <button type="button" class="body-hotspot body-hotspot-single back-zone lats-right" data-view-zone="back" data-body-part="lats" aria-label="右広背筋を選択"><span>LATS</span></button>
-              <button type="button" class="body-hotspot body-hotspot-single back-zone erectors" data-view-zone="back" data-body-part="lower_back" aria-label="脊柱起立筋を選択"><span>ERECTOR</span></button>
-              <button type="button" class="body-hotspot body-hotspot-single back-zone hamstring-left" data-view-zone="back" data-body-part="hamstrings" aria-label="左ハムストリングスを選択"><span>HAMSTRING</span></button>
-              <button type="button" class="body-hotspot body-hotspot-single back-zone hamstring-right" data-view-zone="back" data-body-part="hamstrings" aria-label="右ハムストリングスを選択"><span>HAMSTRING</span></button>
-              <button type="button" class="body-hotspot body-hotspot-single back-zone adductor-left" data-view-zone="back" data-body-part="adductors" aria-label="左内転筋を選択"><span>ADDUCTOR</span></button>
-              <button type="button" class="body-hotspot body-hotspot-single back-zone adductor-right" data-view-zone="back" data-body-part="adductors" aria-label="右内転筋を選択"><span>ADDUCTOR</span></button>
+              <button type="button" class="body-hotspot body-hotspot-single back-zone erectors" data-view-zone="back" data-body-part="erectors" aria-label="脊柱起立筋を選択"><span>ERECTORS</span></button>
               <button type="button" class="body-hotspot body-hotspot-single back-zone calf-left" data-view-zone="back" data-body-part="calves" aria-label="左ふくらはぎを選択"><span>CALF</span></button>
               <button type="button" class="body-hotspot body-hotspot-single back-zone calf-right" data-view-zone="back" data-body-part="calves" aria-label="右ふくらはぎを選択"><span>CALF</span></button>
-              <button type="button" class="body-hotspot body-hotspot-single back-zone triceps-surae-left" data-view-zone="back" data-body-part="triceps_surae" aria-label="左下腿三頭筋を選択"><span>TRICEPS SURAE</span></button>
-              <button type="button" class="body-hotspot body-hotspot-single back-zone triceps-surae-right" data-view-zone="back" data-body-part="triceps_surae" aria-label="右下腿三頭筋を選択"><span>TRICEPS SURAE</span></button>
-              <button type="button" class="body-hotspot body-hotspot-single back-zone soleus-left" data-view-zone="back" data-body-part="soleus" aria-label="左ヒラメ筋を選択"><span>SOLEUS</span></button>
-              <button type="button" class="body-hotspot body-hotspot-single back-zone soleus-right" data-view-zone="back" data-body-part="soleus" aria-label="右ヒラメ筋を選択"><span>SOLEUS</span></button>
             </div>
-
-            <div class="body-stage-hint" id="bodyStageHint">円形マーカーをタップすると、部位別の筋トレ種目へ移動します</div>
           </div>
-        </div>
 
-        <!-- AI COACH: intentionally outside the wireframe stage to prevent overlap -->
-        <div id="aiCoachHost" class="ai-coach-host"></div>
-
-        <!-- Legacy data hooks kept for the existing data engine -->
-        <div class="legacy-home-hooks" aria-hidden="true">
-          <span id="todayWorkoutName">FREE WORKOUT</span>
-          <span id="todayExerciseCount">0</span><span id="todayWorkoutTime">--</span>
-          <span id="streakValue">0</span><span id="volumeValue">0</span><span id="prValue">0</span><span id="workoutCountValue">0</span>
-          <span id="weightValue">--</span><span id="bodyFatValue">--</span><span id="muscleValue">--</span>
-          <button id="startWorkoutButton" type="button"></button><button id="addBodyDataButton" type="button"></button>
+          <div class="body-stage-hint" id="bodyStageHint">円形マーカーをタップすると、部位別の筋トレ種目へ移動します</div>
         </div>
-      </section>
 
       <!-- =================================================
            MUSCLE TARGET // dedicated exercise menu screen
