@@ -2089,3 +2089,18 @@ input:focus-visible {
   background:transparent !important;
   box-shadow:none !important;
 }
+/* 人体画面などのステージ周りの枠線・角の切り落とし・装飾をすべて無効化するコード */
+.single-body-stage,
+.body-core-stage {
+  border: none !important;
+  border-radius: 0 !important;
+  clip-path: none !important;
+  box-shadow: none !important;
+}
+
+.single-body-stage::before,
+.single-body-stage::after,
+.body-core-stage::before,
+.body-core-stage::after {
+  display: none !important;
+}
