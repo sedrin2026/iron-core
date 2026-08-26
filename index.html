@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#050505">
+<title>IRON-CORE</title>
+<style>
+:root{
+  --bg:#050505;--panel:#090b0d;--panel2:#0d1115;--text:#f5f7fa;--muted:#a9afb7;
+  --cyan:#00eaff;--blue:#398cff;--purple:#a84cff;--pink:#ff3d9e;
+  --green:#39e66f;--yellow:#f2d23c;--orange:#ff9b36;--red:#ff5368;
+  --line:rgba(255,255,255,.18);
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:
+ radial-gradient(circle at 50% 0%,rgba(36,48,58,.18),transparent 30%),
+ #050505;color:var(--text);
+ font-family:Inter,"Noto Sans JP",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body{overflow-x:hidden}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.app{width:min(100%,760px);margin:auto;padding:12px 12px 92px}
+.brand{
+  text-align:center;padding:8px 8px 14px;
+  background:linear-gradient(180deg,#020202,#070707);
+}
+.brand img{display:block;width:min(88%,540px);max-height:82px;object-fit:contain;margin:auto}
+.brandFallback{font-weight:950;font-size:42px;letter-spacing:.05em;line-height:.9}
+.brandTag{margin-top:5px;font-size:10px;letter-spacing:.27em;color:#e7e7e7}
+.hero{
+  height:clamp(190px,45vw,330px);border:1px solid #59616a;
+  border-radius:22px;overflow:hidden;position:relative;
+  background:#0b1014 center/cover no-repeat url("hero-banner.png");
+  box-shadow:0 0 0 1px rgba(255,255,255,.04),0 12px 35px rgba(0,0,0,.45);
+}
+.hero:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.08),transparent 50%,rgba(0,0,0,.1))}
+.profile{
+  margin-top:12px;width:100%;min-height:112px;border:1px solid var(--cyan);
+  border-radius:20px;background:
+  linear-gradient(110deg,rgba(0,22,27,.95),rgba(4,14,17,.98) 60%,rgba(0,10,13,.98));
+  color:#fff;display:flex;align-items:center;gap:15px;padding:13px 17px;
+  position:relative;overflow:hidden;text-align:left;
+  box-shadow:0 0 22px rgba(0,234,255,.08),inset 0 0 35px rgba(0,234,255,.035);
+}
+.profile:before{content:"";position:absolute;inset:7px;border:1px solid rgba(0,234,255,.16);border-radius:15px;pointer-events:none}
+.profileIcon{
+  width:92px;min-width:92px;height:76px;display:grid;place-items:center;
+  color:var(--cyan);font-size:46px;border-right:1px solid rgba(0,234,255,.3);
+}
+.profileText{flex:1;position:relative;z-index:1}
+.profileText h2{margin:0;color:var(--cyan);font-size:22px;letter-spacing:.02em}
+.profileText p{margin:3px 0 0;color:#e6e9ed;font-size:10px;line-height:1.35}
+.profileText small{color:#62f1ff;font-size:8px;letter-spacing:.12em}
+.arrow{font-size:44px;font-weight:200;color:var(--cyan);line-height:1}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.tile{
+  min-height:108px;border:2px solid #ff8a00;border-radius:18px;
+  background:linear-gradient(145deg,rgba(16,16,19,.96),rgba(5,6,7,.98));
+  color:#ddd;display:grid;grid-template-columns:58px minmax(0,1fr);align-items:center;
+  padding:13px 12px;position:relative;overflow:hidden;text-align:left;
+  box-shadow:inset 0 0 25px rgba(255,255,255,.015);
+  transition:transform .15s,filter .15s;
+}
+.tile:active{transform:scale(.975);filter:brightness(1.2)}
+.tile:after{content:"";position:absolute;inset:5px;border:1px solid currentColor;opacity:.12;border-radius:13px;pointer-events:none}
+.ico{display:none}
+.tile h3{margin:0;font-size:15px;line-height:1.25;white-space:normal;overflow-wrap:anywhere;word-break:break-word;text-align:left}
+.tile p{display:none}
+.c-purple{color:#b34dff}.c-blue{color:#4a91ff}.c-green{color:#42ef75}
+.c-yellow{color:#f0d33d}.c-cyan{color:#00eaff}.c-pink{color:#ff4aa6}
+.c-orange{color:#ffae43}.c-gold{color:#f0ce2e}.c-gray{color:#c8cdd2}
+.coach{
+  margin-top:12px;border:1px solid var(--purple);border-radius:22px;
+  background:linear-gradient(145deg,#10071c,#07090d 58%,#11051c);
+  padding:16px 17px 14px;box-shadow:0 0 25px rgba(168,76,255,.11);
+  position:relative;overflow:hidden;
+}
+.coach:before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,transparent,var(--purple),transparent)}
+.coachTop{display:flex;gap:14px;align-items:center}
+.aiIcon{
+  width:116px;min-width:116px;height:100px;border:1px solid rgba(168,76,255,.7);
+  border-radius:50%;display:grid;place-items:center;font-size:48px;color:#c17bff;
+  box-shadow:0 0 24px rgba(168,76,255,.18),inset 0 0 20px rgba(168,76,255,.08);
+}
+.coachTitle{flex:1}.coachTitle h2{margin:0;color:#b86cff;font-size:31px;letter-spacing:.06em;line-height:1}
+.coachTitle b{display:block;font-size:20px;margin-top:4px}.coachTitle p{margin:5px 0 0;color:#d8b8ff;font-size:11px;line-height:1.5}
+.refresh{border:1px solid #b65cff;background:transparent;color:#e2baff;border-radius:10px;padding:8px 10px;font-size:11px;white-space:nowrap}
+.coachBody{display:grid;grid-template-columns:190px 1fr;gap:10px;margin-top:12px}
+.dataBox,.adviceBox{border:1px solid rgba(168,76,255,.65);border-radius:12px;background:rgba(4,4,8,.7);padding:11px}
+.boxTitle{color:#d38cff;font-size:11px;margin-bottom:8px}
+.dataRow{display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.07);padding:4px 0;font-size:11px}
+.dataRow:last-child{border-bottom:0}.dataRow span{color:#bfc4ca}
+.edit{margin-top:9px;width:100%;border:1px solid #b65cff;color:#d9adff;background:transparent;border-radius:9px;padding:8px;font-size:10px}
+.adviceBox p{font-size:11px;line-height:1.65;color:#e2e2e2;margin:0}
+.goal{margin-top:9px;border:1px solid #9e46e8;border-radius:8px;padding:7px 9px;color:#d98cff;font-size:11px}
+.alert{margin-top:9px;border:1px solid rgba(238,204,30,.55);border-radius:10px;padding:8px;color:#ead12f;font-size:9px;line-height:1.5}
+.nav{
+  position:fixed;z-index:20;left:50%;bottom:0;transform:translateX(-50%);
+  width:min(100%,760px);height:70px;background:rgba(7,8,9,.96);
+  border-top:1px solid rgba(255,255,255,.17);backdrop-filter:blur(14px);
+  display:grid;grid-template-columns:repeat(5,1fr);padding:6px 6px max(6px,env(safe-area-inset-bottom));
+}
+.nav button{background:transparent;border:0;color:#a9abad;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border-radius:9px;font-size:10px}
+.nav button span{font-size:25px;line-height:1}.nav .active{color:#b65cff;background:rgba(168,76,255,.07);box-shadow:inset 0 0 0 1px rgba(168,76,255,.7)}
+.modal{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.78);backdrop-filter:blur(8px);display:none;align-items:flex-end}
+.modal.show{display:flex}
+.sheet{width:min(100%,760px);max-height:92vh;overflow:auto;background:linear-gradient(180deg,#101217,#050608);border:1px solid var(--purple);border-bottom:0;border-radius:22px 22px 0 0;padding:20px 16px 30px}
+.sheet h2{margin:0;color:#c27aff}.sheet p{color:#a9afb7;font-size:11px;margin:6px 0 17px}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+label{font-size:10px;color:#b9bec5}.field{width:100%;margin-top:5px;background:#090c10;color:#fff;border:1px solid rgba(168,76,255,.45);border-radius:9px;padding:10px;outline:none}
+.actions{display:flex;gap:9px;margin-top:15px}.primary,.secondary{flex:1;padding:12px;border-radius:10px}
+.primary{border:1px solid #c070ff;background:#a84cff;color:white;font-weight:800}.secondary{border:1px solid #4a4f55;background:transparent;color:#eee}
+@media(max-width:650px){
+ .app{padding:8px 8px 82px}.brand{padding-top:5px}.brand img{width:92%;max-height:74px}
+ .hero{height:clamp(175px,48vw,260px);border-radius:17px}
+ .profile{min-height:102px;padding:10px 11px;gap:9px}.profileIcon{width:65px;min-width:65px;font-size:34px}.profileText h2{font-size:18px}.profileText p{font-size:11px}.arrow{font-size:34px}
+ .grid{gap:7px}.tile{min-height:108px;grid-template-columns:43px minmax(0,1fr);padding:9px 8px;border-width:2px}.ico{font-size:31px;width:43px;min-width:43px}.tile h3{
+  order:1;margin:0 0 10px;font-size:14px;line-height:1.15;
+  letter-spacing:.12em;white-space:nowrap;text-align:center;color:#f3f5f7;
+  font-weight:800;text-shadow:0 0 8px currentColor
+}
+.neoIcon{
+  order:2;width:54px;height:54px;display:block;fill:none;stroke:currentColor;
+  stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;
+  filter:drop-shadow(0 0 7px currentColor)
+}
+.neoIcon path:not([fill="none"]),.neoIcon circle{fill:currentColor}
+ .coach{padding:12px}.aiIcon{width:76px;min-width:76px;height:72px;font-size:34px}.coachTitle h2{font-size:24px}.coachTitle b{font-size:16px}.coachTitle p{font-size:9px}.refresh{padding:6px;font-size:9px}
+ .coachBody{grid-template-columns:1fr;}.dataBox{display:none}
+}
+@media(max-width:390px){.tile{min-height:94px}.tile h3{font-size:10px}.neoIcon{width:42px;height:42px}.coachTitle h2{font-size:21px}}
+</style>
+</head>
+<body>
+<main class="app">
+
+<header class="brand">
+  <img src="IRON-CORE-logo-exact.png" alt="IRON-CORE" onerror="this.style.display='none';document.querySelector('.brandFallback').style.display='block'">
+  <div class="brandFallback" style="display:none">IRON-CORE</div>
+  <div class="brandTag">BUILD YOUR STRENGTH. ENGINEER YOUR BODY.</div>
+</header>
+
+<section class="hero" aria-label="IRON-CORE hero"></section>
+
+<section>
+  <button class="profile" id="openProfile">
+    <div class="profileIcon">♙</div>
+    <div class="profileText">
+      <h2>身体データを登録</h2>
+      <small>PERSONAL BODY PROFILE</small>
+      <p>身体データを登録して、AI COACHを最適化。</p>
+    </div>
+    <div class="arrow">›</div>
+  </button>
+</section>
+
+<section class="grid">
+<button class="tile c-purple" onclick="toast('トレーニングメニューを開きます')"><h3>TRAINING</h3><svg class="neoIcon" viewBox="0 0 64 64" aria-hidden="true"><path d="M10 25h10v14H10zM44 25h10v14H44zM20 29h24v6H20zM27 20h10v24H27z"/></svg></button>
+<button class="tile c-blue" onclick="toast('トレーニング記録を開きます')"><h3>WORKOUT LOG</h3><svg class="neoIcon" viewBox="0 0 64 64" aria-hidden="true"><path d="M17 11h30v42H17zM24 20h16M24 29h16M24 38h11" fill="none"/><path d="M42 40l4 4 8-10" fill="none"/></svg></button>
+<button class="tile c-green" onclick="toast('進捗グラフを開きます')"><h3>PROGRESS</h3><svg class="neoIcon" viewBox="0 0 64 64" aria-hidden="true"><path d="M12 50V34h10v16H12zM27 50V24h10v26H27zM42 50V14h10v36H42z" /><path d="M13 27l13-9 11 5 15-12" fill="none"/></svg></button>
+<button class="tile c-yellow" onclick="toast('食事管理を開きます')"><h3>NUTRITION</h3><svg class="neoIcon" viewBox="0 0 64 64" aria-hidden="true"><path d="M16 10v22M12 10v13M20 10v13M16 23v31M45 10c-7 8-8 16-2 22v23M45 10v45" fill="none"/></svg></button>
+<button class="tile c-cyan" onclick="toast('体重管理を開きます')"><h3>BODY TRACKING</h3><svg class="neoIcon" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="12" r="5"/><path d="M24 23l8 6 8-6M28 28l-5 15 9 5 9-5-5-15M32 34v20M23 43l-8 9M41 43l8 9" fill="none"/></svg></button>
+<button class="tile c-pink" onclick="toast('目標設定を開きます')"><h3>GOAL SETTING</h3><svg class="neoIcon" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="22" fill="none"/><circle cx="32" cy="32" r="13" fill="none"/><circle cx="32" cy="32" r="4"/><path d="M32 10v10M54 32H44M32 54V44M10 32h10" fill="none"/></svg></button>
+</section>
+
+<section class="coach">
+  <div class="coachTop">
+    <div class="aiIcon">✦</div>
+    <div class="coachTitle">
+      <h2>AI COACH</h2>
+      <b>AIトレーナー</b>
+      <p>あなたの身体データをもとに、AIが最適なトレーニングを提案します。</p>
+    </div>
+    <button class="refresh" id="refreshCoach">アドバイスを更新 ↻</button>
+  </div>
+
+  <div class="coachBody">
+    <div class="dataBox">
+      <div class="boxTitle">登録データ</div>
+      <div class="dataRow"><span>年齢</span><b id="dAge">--</b></div>
+      <div class="dataRow"><span>性別</span><b id="dSex">--</b></div>
+      <div class="dataRow"><span>身長</span><b id="dHeight">--</b></div>
+      <div class="dataRow"><span>体重</span><b id="dWeight">--</b></div>
+      <button class="edit" id="editProfile">データを確認・編集</button>
+    </div>
+
+    <div class="adviceBox">
+      <div class="boxTitle">AIからのおすすめアドバイス</div>
+      <p id="advice">身体データを登録すると、あなた専用のトレーニング方針を表示します。</p>
+      <div class="goal" id="goalView">目標： PROFILE REQUIRED</div>
+      <div class="alert">⚠ HEALTH ALERT<br><span>入力された数値については、必要に応じて医療専門家への相談を推奨します。AI COACHは医療診断を行いません。</span></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<nav class="nav">
+  <button class="active" onclick="toast('ホーム')"><span>⌂</span>ホーム</button>
+  <button onclick="toast('記録')"><span>▤</span>記録</button>
+  <button onclick="toast('カレンダー')"><span>▦</span>カレンダー</button>
+  <button onclick="toast('分析')"><span>▥</span>分析</button>
+  <button onclick="toast('メニュー')"><span>☰</span>メニュー</button>
+</nav>
+
+<div class="modal" id="modal">
+  <div class="sheet">
+    <h2>PERSONAL BODY PROFILE</h2>
+    <p>身体データを登録すると、AI COACHが個体差を考慮した提案を行います。</p>
+    <div class="formgrid">
+      <label>年齢<input class="field" id="age" type="number" min="10" max="100" placeholder="28"></label>
+      <label>性別<select class="field" id="sex"><option value="">選択</option><option>男性</option><option>女性</option></select></label>
+      <label>身長 (cm)<input class="field" id="height" type="number" step="0.1" placeholder="175"></label>
+      <label>体重 (kg)<input class="field" id="weight" type="number" step="0.1" placeholder="72"></label>
+      <label>腕周り (cm)<input class="field" id="arm" type="number" step="0.1" placeholder="32"></label>
+      <label>ウエスト (cm)<input class="field" id="waist" type="number" step="0.1" placeholder="75"></label>
+      <label>ヒップ (cm)<input class="field" id="hip" type="number" step="0.1" placeholder="90"></label>
+      <label>太もも (cm)<input class="field" id="thigh" type="number" step="0.1" placeholder="52"></label>
+      <label>血圧 上 (mmHg)<input class="field" id="bpSys" type="number" placeholder="120"></label>
+      <label>血圧 下 (mmHg)<input class="field" id="bpDia" type="number" placeholder="80"></label>
+      <label style="grid-column:1/-1">目的<select class="field" id="goal"><option>筋肥大</option><option>減量</option><option>ボディメイク</option><option>筋力アップ</option><option>健康・体力維持</option></select></label>
+    </div>
+    <div class="actions"><button class="secondary" id="closeModal">キャンセル</button><button class="primary" id="saveProfile">登録してAI分析</button></div>
+  </div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const modal=$("modal");
+
+function openModal(){modal.classList.add("show")}
+function closeModal(){modal.classList.remove("show")}
+$("openProfile").onclick=openModal;
+$("editProfile").onclick=openModal;
+$("closeModal").onclick=closeModal;
+modal.addEventListener("click",e=>{if(e.target===modal)closeModal()});
+
+function toast(text){
+  let t=document.getElementById("toast");
+  if(!t){
+    t=document.createElement("div");t.id="toast";
+    t.style.cssText="position:fixed;left:50%;bottom:82px;transform:translateX(-50%);z-index:80;background:#15171b;color:#fff;border:1px solid #555;border-radius:12px;padding:10px 16px;font-size:12px;box-shadow:0 8px 30px #000";
+    document.body.appendChild(t);
+  }
+  t.textContent=text;t.style.display="block";
+  clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.style.display="none",1300);
+}
+
+function loadProfile(){
+  try{return JSON.parse(localStorage.getItem("ironCoreProfile"))||null}catch(e){return null}
+}
+function updateCoach(p){
+  if(!p)return;
+  $("dAge").textContent=p.age?p.age+"歳":"--";
+  $("dSex").textContent=p.sex||"--";
+  $("dHeight").textContent=p.height?p.height+"cm":"--";
+  $("dWeight").textContent=p.weight?p.weight+"kg":"--";
+  $("goalView").textContent="目標： "+(p.goal||"PROFILE REQUIRED");
+  let advice=(p.goal||"ボディメイク")+"を目的として、現在の身体データを基準にトレーニング負荷と回復量を個別最適化します。";
+  if(p.height&&p.weight){
+    const bmi=Number(p.weight)/((Number(p.height)/100)**2);
+    advice+=" BMI目安は "+bmi.toFixed(1)+"。体重だけで判断せず、各部位サイズとトレーニング履歴を組み合わせて変化を追跡します。";
+  }
+  if(p.bpSys&&p.bpDia&&(Number(p.bpSys)>=140||Number(p.bpDia)>=90)){
+    advice+=" 血圧値が高めに入力されています。運動強度については医療専門家への相談を優先してください。";
+  }
+  $("advice").textContent=advice;
+}
+$("saveProfile").onclick=()=>{
+  const p={
+    age:$("age").value,sex:$("sex").value,height:$("height").value,weight:$("weight").value,
+    arm:$("arm").value,waist:$("waist").value,hip:$("hip").value,thigh:$("thigh").value,
+    bpSys:$("bpSys").value,bpDia:$("bpDia").value,goal:$("goal").value
+  };
+  localStorage.setItem("ironCoreProfile",JSON.stringify(p));
+  updateCoach(p);closeModal();toast("身体データを登録しました");
+};
+$("refreshCoach").onclick=()=>{updateCoach(loadProfile());toast("AIアドバイスを更新しました")};
+
+const p=loadProfile();
+if(p){
+  $("age").value=p.age||"";$("sex").value=p.sex||"";$("height").value=p.height||"";$("weight").value=p.weight||"";
+  $("arm").value=p.arm||"";$("waist").value=p.waist||"";$("hip").value=p.hip||"";$("thigh").value=p.thigh||"";
+  $("bpSys").value=p.bpSys||"";$("bpDia").value=p.bpDia||"";$("goal").value=p.goal||"筋肥大";
+  updateCoach(p);
+}
+</script>
+</body>
+</html>
