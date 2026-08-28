@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#03070c">
+<title>IRON-CORE</title>
+<style>
+:root{
+  --bg:#02060b; --panel:#071421; --panel2:#0a1b2b; --cyan:#20d9ff;
+  --cyan2:#66ecff; --purple:#9b5cff; --pink:#ff3fb4; --text:#f3f8ff; --muted:#7d91a6;
+  --line:rgba(32,217,255,.42); --shadow:0 0 24px rgba(32,217,255,.12);
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:
+ radial-gradient(circle at 50% -10%,rgba(18,80,120,.28),transparent 42%),
+ linear-gradient(180deg,#03070c,#02050a 70%,#010307);color:var(--text);
+ font-family:Inter,"Noto Sans JP",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body{overflow-x:hidden}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.app{width:min(100%,760px);margin:auto;padding:14px 14px 94px}
+.topbar{height:74px;display:flex;align-items:center;justify-content:space-between;
+ border:1px solid rgba(32,217,255,.34);border-radius:18px;padding:10px 16px;
+ background:linear-gradient(180deg,rgba(7,20,32,.96),rgba(2,8,14,.96));
+ box-shadow:var(--shadow);position:relative;overflow:hidden}
+.topbar:after{content:"";position:absolute;inset:0;pointer-events:none;
+ background:linear-gradient(110deg,transparent 0 43%,rgba(32,217,255,.08) 50%,transparent 57%)}
+.brand{letter-spacing:.13em;font-weight:900;font-size:25px}
+.brand span{color:var(--cyan);text-shadow:0 0 16px rgba(32,217,255,.7)}
+.brandLogoWrap{flex:1;display:flex;justify-content:center;align-items:center}.brandLogo{display:block;width:min(100%,500px);height:auto;object-fit:contain}.tag{font-size:9px;letter-spacing:.2em;color:var(--muted);margin-top:2px}
+.hud{width:34px;height:34px;border:1px solid var(--line);border-radius:10px;display:grid;place-items:center;color:var(--cyan);font-size:18px}
+.hero{margin-top:14px;height:clamp(190px,44vw,340px);border:1px solid var(--cyan);border-radius:20px;overflow:hidden;position:relative;
+ background:#07111b center/cover no-repeat url("hero-banner.png");
+ box-shadow:0 0 28px rgba(32,217,255,.14),inset 0 0 40px rgba(0,0,0,.35)}
+.hero:before{content:"";position:absolute;inset:0;background:center/cover no-repeat url("hero-banner.png");filter:brightness(1.12) contrast(1.12);z-index:0}
+.hero:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.2),transparent 50%,rgba(0,0,0,.2));z-index:1}
+.heroTitle{position:absolute;z-index:2;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;white-space:nowrap;text-shadow:0 2px 18px #000}
+.heroTitle b{font-size:clamp(24px,6vw,46px);letter-spacing:.12em}
+
+.section{margin-top:14px}
+.wide{width:100%;min-height:92px;border:1px solid var(--cyan);border-radius:18px;
+ background:linear-gradient(110deg,#07192a,#0a1624 55%,#06111d);color:var(--text);
+ display:flex;align-items:center;gap:16px;padding:16px 20px;position:relative;overflow:hidden;
+ box-shadow:0 0 20px rgba(32,217,255,.08)}
+.wide:before{content:"";position:absolute;left:0;top:0;width:34%;height:2px;background:linear-gradient(90deg,var(--cyan),transparent)}
+.wideIcon{width:52px;height:52px;border-radius:14px;border:1px solid var(--cyan);display:grid;place-items:center;
+ color:var(--cyan);font-size:26px;background:rgba(32,217,255,.06);box-shadow:0 0 18px rgba(32,217,255,.12)}
+.wideText{flex:1;text-align:left}.wideText b{display:block;font-size:18px;letter-spacing:.06em}.wideText small{color:var(--muted);font-size:9px;letter-spacing:.16em}
+.chev{font-size:28px;color:var(--cyan)}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.tile{min-width:0;aspect-ratio:1/1;border:1px solid rgba(32,217,255,.48);border-radius:17px;
+ background:linear-gradient(145deg,rgba(9,27,43,.96),rgba(3,11,18,.98));display:flex;flex-direction:column;
+ align-items:center;justify-content:center;padding:10px;text-align:center;position:relative;overflow:hidden;
+ box-shadow:inset 0 0 22px rgba(32,217,255,.035);transition:.18s}
+.tile:before{content:"";position:absolute;inset:5px;border:1px solid rgba(32,217,255,.08);border-radius:12px;pointer-events:none}
+.tile:active{transform:scale(.97);border-color:var(--cyan);box-shadow:0 0 18px rgba(32,217,255,.22)}
+.tile .ico{font-size:32px;line-height:1;color:var(--cyan);filter:drop-shadow(0 0 7px rgba(32,217,255,.55));margin-bottom:12px}
+.tile b{font-size:13px;white-space:nowrap}.tile small{font-size:8px;letter-spacing:.11em;color:var(--muted);margin-top:4px;white-space:nowrap}
+.coach{border-color:rgba(155,92,255,.72);background:linear-gradient(110deg,#0c1024,#08182a,#120c23);
+ box-shadow:0 0 24px rgba(155,92,255,.12)}
+.coach .wideIcon{border-color:var(--purple);color:#cba9ff;box-shadow:0 0 18px rgba(155,92,255,.2)}
+.coach .wideText b{color:#d9c6ff}.coach .wideText small{color:#a88bd2}
+.coachCard{margin-top:10px;border:1px solid rgba(155,92,255,.4);border-radius:16px;padding:14px;background:rgba(7,9,20,.75)}
+.coachHead{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.status{font-size:9px;color:#bba3e9;letter-spacing:.12em}.advice{margin-top:9px;line-height:1.65;font-size:13px;color:#dce3ef}
+.mini{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.pill{font-size:9px;border:1px solid rgba(155,92,255,.38);padding:5px 8px;border-radius:99px;color:#cdb8f5}
+.nav{position:fixed;z-index:99999;pointer-events:auto;left:50%;bottom:0;transform:translateX(-50%);width:min(100%,760px);
+ background:rgba(2,6,11,.94);backdrop-filter:blur(12px);border-top:1px solid rgba(32,217,255,.25);
+ display:grid;grid-template-columns:repeat(5,1fr);padding:8px 8px max(8px,env(safe-area-inset-bottom))}
+.nav button{background:none;border:0;color:#66788a;font-size:9px;display:flex;flex-direction:column;align-items:center;gap:3px}
+.nav button span{font-size:20px}.nav .active{color:var(--cyan);text-shadow:0 0 10px rgba(32,217,255,.45)}
+.modal{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.72);backdrop-filter:blur(8px);display:none;align-items:flex-end;justify-content:center;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-y;overscroll-behavior-y:auto;padding-bottom:calc(86px + env(safe-area-inset-bottom));box-sizing:border-box}
+.modal.show{display:flex}
+.sheet{width:min(100%,760px);max-height:none;min-height:min-content;overflow:visible;background:linear-gradient(180deg,#071421,#02070d);
+ border:1px solid rgba(32,217,255,.5);border-bottom:0;border-radius:22px 22px 0 0;padding:20px 16px 34px;box-shadow:0 -10px 50px rgba(32,217,255,.12);flex:0 0 auto;box-sizing:border-box}
+.sheet h2{margin:0 0 5px;font-size:20px}.sheet p{margin:0 0 18px;color:var(--muted);font-size:11px}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+label{font-size:10px;color:#8da3b8;display:block}.field{margin-top:5px;width:100%;background:#06101a;color:#fff;border:1px solid rgba(32,217,255,.26);border-radius:10px;padding:10px;outline:none}
+.field:focus{border-color:var(--cyan);box-shadow:0 0 10px rgba(32,217,255,.1)}
+.actions{display:flex;gap:10px;margin-top:16px}.primary,.secondary{flex:1;border-radius:11px;padding:12px;border:1px solid var(--cyan)}
+.primary{background:var(--cyan);color:#001018;font-weight:800}.secondary{background:transparent;color:var(--text);border-color:#34495b}
+@media(max-width:420px){.app{padding-left:10px;padding-right:10px}.grid{gap:7px}.tile{border-radius:13px}.tile .ico{font-size:27px;margin-bottom:8px}.tile b{font-size:11px}.tile small{font-size:7px}.wide{padding:13px 14px}.wideText b{font-size:16px}}
+
+/* REFERENCE IMAGE: 9 PANELS ONLY */
+.ref-exact-panel{border:0!important;border-radius:0!important;padding:0!important;aspect-ratio:249/261;background-color:transparent!important;background-repeat:no-repeat;background-position:center;background-size:100% 100%;box-shadow:none!important;overflow:hidden;}
+.ref-exact-panel:before{display:none!important}.ref-exact-panel:active{transform:scale(.97);border:0!important;box-shadow:none!important}
+.ref-exact-panel span{display:none}
+.aiCoachSubtitle{
+  margin-top:4px;
+  font-size:11px;
+  line-height:1.2;
+  color:#dfe7ff;
+  letter-spacing:.08em;
+  text-align:center;
+  font-weight:700;
+}
+
+/* TRAINING EXPLANATION SCREEN — added without changing the existing top UI */
+.trainingScreen{position:fixed;inset:0;z-index:1000;display:none;background:#02070d;overflow-y:auto;overflow-x:hidden;padding:10px 10px 110px;-webkit-overflow-scrolling:touch}
+.trainingScreen.show{display:block}
+.trainingScreenInner{width:min(100%,760px);margin:auto}
+.screenLogoBar{position:sticky;top:0;z-index:50;height:74px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(32,217,255,.34);border-radius:18px;padding:9px 14px;background:linear-gradient(180deg,rgba(7,20,32,.97),rgba(2,8,14,.97));box-shadow:0 0 24px rgba(32,217,255,.12);overflow:hidden;backdrop-filter:blur(12px)}
+.screenLogoBar:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,transparent 0 43%,rgba(32,217,255,.08) 50%,transparent 57%)}
+.screenLogoBar img{position:relative;z-index:1;display:block;width:min(100%,500px);height:auto;object-fit:contain;cursor:pointer}.brandLogoWrap{cursor:pointer}
+.trainingIntro{margin-top:12px;border:1px solid rgba(32,217,255,.34);border-radius:16px;background:linear-gradient(145deg,#071725,#030b13);padding:13px 15px;box-shadow:0 0 20px rgba(32,217,255,.06)}
+.trainingIntro b{display:block;font-size:16px;letter-spacing:.1em}.trainingIntro small{display:block;margin-top:3px;color:#20d9ff;font-size:9px;letter-spacing:.14em}.trainingIntro p{margin:9px 0 0;color:#b9c8d5;font-size:11px;line-height:1.65}
+.trainingStage{width:100%;margin:12px auto 0;position:relative;display:flex;justify-content:center;align-items:flex-start}
+.trainingHologram{display:block;width:min(100%,853px);height:auto;object-fit:contain;object-position:top center}
+.trainingSwitch{position:absolute;top:18px;right:18px;display:flex;gap:4px;padding:4px;border:1px solid rgba(32,217,255,.7);border-radius:10px;background:rgba(2,8,14,.84);box-shadow:0 0 18px rgba(32,217,255,.14);backdrop-filter:blur(8px);z-index:20}
+.trainingSwitch button{border:1px solid transparent;border-radius:7px;padding:7px 10px;background:transparent;color:#7890a5;font-size:10px;font-weight:900;letter-spacing:.12em;cursor:pointer}.trainingSwitch button.active{color:#001018;background:#20d9ff;box-shadow:0 0 12px rgba(32,217,255,.4)}
+.muscleZoneLayer{position:absolute;inset:0;z-index:10;pointer-events:auto}.muscleZone{position:absolute;transform:translate(-50%,-50%);width:170px;height:170px;border-radius:50%;border:2px solid rgba(32,217,255,.92);background:rgba(32,217,255,.035);box-shadow:0 0 0 2px rgba(32,217,255,.07),0 0 18px rgba(32,217,255,.28),inset 0 0 18px rgba(32,217,255,.08);pointer-events:none;box-sizing:border-box}.muscleZone.small{width:132px;height:132px}
+.libraryHeader{margin:18px 0 10px;display:flex;align-items:end;justify-content:space-between;gap:10px}.libraryHeader b{font-size:16px;letter-spacing:.1em}.libraryHeader small{color:#20d9ff;font-size:9px;letter-spacing:.12em}.libraryCount{font-size:10px;color:#8ea4b7;border:1px solid rgba(32,217,255,.25);border-radius:999px;padding:5px 8px;white-space:nowrap}
+.exerciseLibrary{display:grid;grid-template-columns:1fr 1fr;gap:10px}.libraryCard{border:1px solid rgba(32,217,255,.3);border-radius:16px;background:linear-gradient(145deg,#071725,#030b13);padding:14px;box-shadow:0 0 20px rgba(32,217,255,.055);text-align:left}.libraryCard .num{font-size:8px;color:#20d9ff;letter-spacing:.16em}.libraryCard h3{margin:4px 0 0;font-size:15px;line-height:1.35}.libraryCard .en{margin-top:3px;color:#7f96aa;font-size:8px;letter-spacing:.08em}.libraryMeta{display:flex;flex-wrap:wrap;gap:5px;margin:9px 0}.libraryMeta span{font-size:8px;color:#b8c9d5;border:1px solid rgba(32,217,255,.2);padding:4px 6px;border-radius:999px}.libraryCard h4{margin:10px 0 4px;color:#20d9ff;font-size:9px;letter-spacing:.12em}.libraryCard p{margin:0;color:#d9e5ee;font-size:11px;line-height:1.65}.libraryCard ol{margin:0;padding-left:18px;color:#d9e5ee;font-size:11px;line-height:1.65}.libraryCard li+li{margin-top:2px}.bodyweightBadge{display:inline-block;margin-left:5px;padding:3px 6px;border-radius:999px;border:1px solid rgba(102,236,255,.7);color:#66ecff;font-size:8px;vertical-align:middle;letter-spacing:.06em}.ngBox{margin-top:9px;padding:8px 9px;border-left:2px solid #ff3fb4;background:rgba(255,63,180,.045);border-radius:7px}.ngBox b{display:block;color:#ff78c9;font-size:9px;letter-spacing:.1em;margin-bottom:3px}.ngBox p{color:#e7c9da;font-size:10px;line-height:1.6}
+.exerciseDetails{position:fixed;inset:0;z-index:1100;display:none;background:linear-gradient(180deg,#02070d,#01040a);overflow-y:auto;overflow-x:hidden;padding:10px 10px 110px;-webkit-overflow-scrolling:touch}.exerciseDetails.show{display:block}.exerciseDetailsInner{width:min(100%,760px);margin:auto}.exerciseDetails .screenLogoBar{position:sticky;top:0}.exerciseDetailsHead{position:sticky;top:74px;z-index:3;display:flex;align-items:center;gap:10px;padding:9px 0 10px;background:rgba(2,7,13,.94);backdrop-filter:blur(10px);border-bottom:1px solid rgba(32,217,255,.18)}.exerciseBack{width:38px;height:38px;border:1px solid rgba(32,217,255,.55);border-radius:10px;background:#06131f;color:#20d9ff;font-size:18px}.exerciseDetailsHeadText{flex:1}.exerciseDetailsHeadText b{display:block;font-size:17px;letter-spacing:.08em}.exerciseDetailsHeadText small{color:#7d91a6;font-size:9px;letter-spacing:.14em}.exerciseCards{display:grid;gap:10px;padding-top:12px}.exerciseCard{border:1px solid rgba(32,217,255,.3);border-radius:16px;background:linear-gradient(145deg,#071725,#030b13);padding:15px;box-shadow:0 0 20px rgba(32,217,255,.06);text-align:left}.exerciseCard h3{margin:0;font-size:17px;line-height:1.35}.exerciseCard .en{margin-top:3px;color:#20d9ff;font-size:9px;letter-spacing:.1em}.exerciseMeta{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}.exerciseMeta span{font-size:9px;color:#a9c0d2;border:1px solid rgba(32,217,255,.2);padding:5px 7px;border-radius:999px}.exerciseCard h4{margin:12px 0 5px;font-size:10px;color:#20d9ff;letter-spacing:.12em}.exerciseCard p{margin:0;color:#d9e5ee;font-size:12px;line-height:1.7}.exerciseCard ol{margin:0;padding-left:19px;color:#d9e5ee;font-size:12px;line-height:1.75}.exerciseCard li+li{margin-top:3px}.exerciseEmpty{padding:28px 12px;text-align:center;color:#7d91a6;border:1px dashed rgba(32,217,255,.25);border-radius:14px}
+@media(max-width:620px){.exerciseLibrary{grid-template-columns:1fr}.screenLogoBar{height:68px}.exerciseDetailsHead{top:68px}.libraryCard h3{font-size:15px}}
+@media(max-width:520px){.trainingScreen{padding:8px 8px 18px}.trainingSwitch{top:14px;right:14px}.muscleZone{width:21%;height:auto;aspect-ratio:1;border-width:2px}.muscleZone.small{width:16.5%;height:auto;aspect-ratio:1}}
+
+/* PERSONAL GUIDANCE SCREENS */
+.personalScreen{position:fixed;inset:0;z-index:1050;display:none;background:linear-gradient(180deg,#02070d,#01040a);overflow:auto;padding:10px 10px 120px}.personalScreen.show{display:block}.personalInner{width:min(100%,760px);margin:auto}.personalScreen .screenLogoBar{position:sticky;top:0}.personalHead{padding:14px 2px 10px}.personalHead b{display:block;color:#20d9ff;font-size:18px;letter-spacing:.08em}.personalHead small{color:#7d91a6;font-size:9px;letter-spacing:.14em}.personalCard{border:1px solid rgba(32,217,255,.28);border-radius:16px;background:linear-gradient(145deg,#071725,#030b13);padding:15px;margin-bottom:10px;text-align:left}.personalCard h3{margin:0 0 8px;color:#20d9ff;font-size:12px;letter-spacing:.1em}.personalCard p{margin:0;color:#d9e5ee;font-size:12px;line-height:1.75}.metricGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.metric{padding:10px;border:1px solid rgba(32,217,255,.18);border-radius:10px;background:rgba(32,217,255,.035)}.metric small{display:block;color:#7d91a6;font-size:8px}.metric strong{display:block;margin-top:3px;font-size:14px}.recommendList{margin:0;padding-left:20px;color:#d9e5ee;font-size:12px;line-height:1.75}.personalNote{margin-top:8px;color:#7d91a6;font-size:9px;line-height:1.6}.profileLogo{margin:-10px -10px 12px}.profileLogo .screenLogoBar{border-radius:18px 18px 0 0}
+.settingsScreen{position:fixed;inset:0;z-index:1050;display:none;background:linear-gradient(180deg,#02070d,#01040a);overflow-y:auto;overflow-x:hidden;padding:10px 10px 120px;-webkit-overflow-scrolling:touch}
+.settingsScreen.show{display:block}
+.settingsInner{width:min(100%,760px);margin:auto}
+.settingsScreen .screenLogoBar{position:sticky;top:0}
+.settingsBanner{margin-top:12px;border:0;border-radius:0;overflow:visible;background:transparent;box-shadow:none}
+.settingsBanner img{display:block;width:100%;height:auto;aspect-ratio:1792/1024;object-fit:cover;border:0}
+.settingsHead{padding:14px 2px 10px}
+.settingsHead b{display:block;color:var(--cyan);font-size:22px;letter-spacing:.08em;font-weight:900}
+.settingsHead small{display:block;margin-top:4px;color:var(--muted);font-size:10px;letter-spacing:.14em}
+.settingsGroup{border:1px solid rgba(32,217,255,.22);border-radius:16px;background:linear-gradient(145deg,#071725,#030b13);padding:13px;margin-bottom:10px;box-shadow:0 0 18px rgba(32,217,255,.045)}
+.settingsGroup h3{margin:0 0 10px;color:var(--cyan);font-size:12px;letter-spacing:.12em;font-weight:900}
+.settingsItem{display:flex;align-items:center;gap:10px;padding:12px 0;border-top:1px solid rgba(32,217,255,.10);min-height:48px;box-sizing:border-box}
+.settingsItem:first-of-type{border-top:0}
+.settingsIcon{width:34px;flex:none;text-align:center;color:var(--cyan);font-size:22px;line-height:1;text-shadow:0 0 10px rgba(32,217,255,.35)}
+.settingsIcon svg{display:block;width:32px;height:32px;margin:0 auto;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 5px rgba(32,217,255,.28))}
+.settingsIcon svg circle,.settingsIcon svg rect,.settingsIcon svg path{vector-effect:non-scaling-stroke}
+.bodyDataIcon{width:42px;height:42px;display:flex;align-items:center;justify-content:center}
+.bodyDataIcon img{display:block;width:42px;height:42px;object-fit:contain;filter:drop-shadow(0 0 5px rgba(32,217,255,.28))}
+
+.settingsIcon svg path,.settingsIcon svg circle,.settingsIcon svg rect{vector-effect:non-scaling-stroke}
+.settingsItemText{flex:1;text-align:left;min-width:0}
+.settingsItemText b{display:block;font-size:14px;line-height:1.25}
+.settingsItemText small{display:block;margin-top:3px;color:var(--muted);font-size:10px;line-height:1.45}
+.settingsBtn{border:1px solid rgba(255,63,180,.75);background:rgba(255,63,180,.055);color:#ff8dcd;border-radius:10px;padding:10px 13px;font-size:10px;white-space:nowrap;min-width:76px}
+.settingsBtn:active{transform:scale(.97)}
+.settingsSelect{background:#06101a;color:#fff;border:1px solid rgba(32,217,255,.34);border-radius:9px;padding:8px 10px;min-width:92px;font-size:11px}
+.settingsSwitch{appearance:none;width:46px;height:26px;border:1px solid rgba(32,217,255,.35);border-radius:99px;background:#071421;position:relative;flex:none}
+.settingsSwitch:before{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#66788a;transition:.18s}
+.settingsSwitch:checked{border-color:var(--cyan);background:rgba(32,217,255,.55)}
+.settingsSwitch:checked:before{left:24px;background:#fff;box-shadow:0 0 10px rgba(32,217,255,.55)}
+.settingsDanger{border-color:rgba(255,63,180,.48)}
+.settingsDanger h3{color:#ff78c9}
+.settingsNote{color:var(--muted);font-size:9px;line-height:1.65;margin:5px 0 0}
+.settingsResetDesc{font-size:10px !important;line-height:1.55 !important}
+@media(max-width:520px){
+  .settingsHead b{font-size:21px}
+  .settingsItem{gap:8px}
+  .settingsIcon{width:32px}
+  .settingsItemText b{font-size:13px}
+  .settingsItemText small{font-size:9px}
+}
+@media(max-width:520px){.metricGrid{grid-template-columns:1fr 1fr}.personalCard{padding:13px}}
+
+/* GLOBAL SCROLL SAFETY — every app screen remains vertically scrollable */
+html, body{
+  min-height:100%;
+  overflow-x:hidden;
+}
+main.app{
+  min-height:100vh;
+  padding-bottom:calc(92px + env(safe-area-inset-bottom));
+}
+.trainingScreen,
+.exerciseDetails,
+.personalScreen,
+.modal{
+  touch-action:pan-y;
+  overscroll-behavior-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.trainingScreen{
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  height:100dvh;
+  max-height:100dvh;
+  box-sizing:border-box;
+  padding-bottom:calc(110px + env(safe-area-inset-bottom));
+}
+.exerciseDetails{
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  height:100dvh;
+  max-height:100dvh;
+  box-sizing:border-box;
+  padding-bottom:calc(110px + env(safe-area-inset-bottom));
+}
+.personalScreen{
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  height:100dvh;
+  max-height:100dvh;
+  box-sizing:border-box;
+  padding-bottom:calc(120px + env(safe-area-inset-bottom));
+}
+.sheet{
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior-y:auto;
+}
+
+
+/* AI COACH / PROFILE MODAL — reliable Android touch scrolling */
+.modal{
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  align-items:flex-start !important;
+  padding-top:10px;
+  padding-bottom:calc(110px + env(safe-area-inset-bottom)) !important;
+  box-sizing:border-box;
+  touch-action:pan-y !important;
+  -webkit-overflow-scrolling:touch !important;
+}
+.modal .sheet{
+  width:min(100%,760px);
+  max-height:none !important;
+  min-height:0 !important;
+  height:auto !important;
+  margin:0 auto;
+  overflow:visible !important;
+  flex:none;
+}
+.personalScreen{
+  height:100dvh !important;
+  max-height:100dvh !important;
+  box-sizing:border-box !important;
+  overflow-y:scroll !important;
+  overflow-x:hidden !important;
+  touch-action:pan-y !important;
+  -webkit-overflow-scrolling:touch !important;
+}
+.personalInner{
+  min-height:calc(100% + 2px);
+  padding-bottom:2px;
+}
+
+
+/* GLOBAL BOTTOM NAV — always visible and tappable from every screen */
+.nav{
+  position:fixed !important;
+  left:50% !important;
+  bottom:0 !important;
+  z-index:2147483000 !important;
+  pointer-events:auto !important;
+  transform:translateX(-50%) translateZ(0);
+  padding-bottom:max(8px,env(safe-area-inset-bottom));
+}
+
+
+.settingsIcon.realIcon{width:42px;height:42px;display:flex;align-items:center;justify-content:center;flex:none}
+.settingsIcon.realIcon img{display:block;width:42px;height:42px;object-fit:contain}
+
+/* HOME ICONS — extracted directly from the approved master artwork */
+.ref-exact-panel{
+  border:1px solid rgba(32,217,255,.48)!important;
+  border-radius:17px!important;
+  padding:10px!important;
+  aspect-ratio:249/261;
+  background:linear-gradient(145deg,rgba(9,27,43,.96),rgba(3,11,18,.98))!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  box-shadow:inset 0 0 22px rgba(32,217,255,.035)!important;
+  overflow:hidden;
+  position:relative;
+}
+.ref-exact-panel:before{content:''!important;display:block!important;position:absolute;inset:5px;border:1px solid rgba(32,217,255,.08);border-radius:12px;pointer-events:none;}
+.ref-exact-panel:active{transform:scale(.97);border-color:var(--cyan)!important;box-shadow:0 0 18px rgba(32,217,255,.22)!important}
+.ref-exact-panel .homeIcon{width:76%;height:auto;aspect-ratio:1/1;object-fit:contain;display:block;position:relative;z-index:1;margin:0 auto 7px;filter:drop-shadow(0 0 7px rgba(32,217,255,.30));}
+.ref-exact-panel .homeLabel{position:relative;z-index:2;text-align:center;line-height:1.1;white-space:nowrap;}
+.ref-exact-panel .homeLabel b{display:block;font-size:13px;color:#f2f7ff;}
+.ref-exact-panel .homeLabel small{display:block;font-size:8px;letter-spacing:.11em;color:var(--muted);margin-top:5px;}
+
+</style>
+</head>
+<body>
+<main class="app">
+  <header class="topbar">
+    <div class="brandLogoWrap"><img class="brandLogo" src="IRON-CORE-logo-exact.png" alt="IRON-CORE"></div>
+  </header>
+
+  <section class="hero">
+    
+  </section>
+
+  <section class="section">
+    <button class="wide" id="openProfile">
+      <div class="wideIcon">♙</div>
+      <div class="wideText"><b>身体データを登録</b><small>PERSONAL BODY PROFILE</small></div>
+      <div class="chev">›</div>
+    </button>
+  </section>
+
+  <section class="section grid ref-exact-grid">
+    <button class="tile ref-exact-panel" id="openTraining" aria-label="トレーニング"><img class="homeIcon" src="training-icon.png" alt=""><span class="homeLabel"><b>トレーニング</b><small>WORKOUT</small></span></button>
+    <button class="tile ref-exact-panel" aria-label="トレーニング記録"><img class="homeIcon" src="workout-log-icon.png" alt=""><span class="homeLabel"><b>トレーニング記録</b><small>WORKOUT LOG</small></span></button>
+    <button class="tile ref-exact-panel" aria-label="進捗グラフ"><img class="homeIcon" src="progress-icon.png" alt=""><span class="homeLabel"><b>進捗グラフ</b><small>PROGRESS</small></span></button>
+    <button class="tile ref-exact-panel" id="openNutrition" aria-label="食事管理"><img class="homeIcon" src="meal-management-icon.png" alt=""><span class="homeLabel"><b>食事管理</b><small>NUTRITION</small></span></button>
+    <button class="tile ref-exact-panel" id="openWeight" aria-label="体重管理"><img class="homeIcon" src="weight-management-icon.png" alt=""><span class="homeLabel"><b>体重管理</b><small>BODY TRACKING</small></span></button>
+    <button class="tile ref-exact-panel" id="openGoal" aria-label="目標設定"><img class="homeIcon" src="goal-setting-icon.png" alt=""><span class="homeLabel"><b>目標設定</b><small>GOAL SETTING</small></span></button>
+    <button class="tile ref-exact-panel" id="openTrainingGuide" aria-label="トレーニング解説"><img class="homeIcon" src="training-guide-icon.png" alt=""><span class="homeLabel"><b>トレーニング解説</b><small>EXERCISE GUIDE</small></span></button>
+    <button class="tile ref-exact-panel" aria-label="実績・バッジ"><img class="homeIcon" src="achievement-icon.png" alt=""><span class="homeLabel"><b>実績・バッジ</b><small>ACHIEVEMENT</small></span></button>
+    <button class="tile ref-exact-panel" id="openSettings" aria-label="設定"><img class="homeIcon" src="settings-icon.png" alt=""><span class="homeLabel"><b>設定</b><small>SETTINGS</small></span></button>
+  </section>
+
+  <section class="section">
+    <button class="wide coach" id="openCoach">
+      <div class="wideIcon">✦</div>
+      <div class="wideText"><b>AI COACH <span style="font-size:12px">（AIトレーナー）</span></b><small>PERSONALIZED TRAINING INTELLIGENCE</small></div>
+      <div class="chev">›</div>
+    </button>
+    <div class="coachCard">
+      <div class="coachHead"><strong id="coachTitle">AI COACH // READY</strong><span class="status" id="coachStatus">PROFILE REQUIRED</span></div>
+      <div class="advice" id="coachAdvice">身体データを登録すると、年齢・性別・身長・体重・各部位サイズ・血圧・目標などを基に、あなた専用のトレーニング方針を生成します。</div>
+      <div class="mini" id="coachPills"><span class="pill">PERSONALIZED</span><span class="pill">DATA DRIVEN</span><span class="pill">GOAL BASED</span></div>
+    </div>
+  </section>
+</main>
+
+<nav class="nav">
+  <button class="active" id="bottomHome"><span>⌂</span>ホーム</button>
+  <button><span>□</span>カレンダー</button>
+  <button><span>＋</span>記録する</button>
+  <button><span>▥</span>分析</button>
+  <button><span>♙</span>マイページ</button>
+</nav>
+
+<div class="modal" id="modal">
+  <div class="sheet">
+    <div class="profileLogo"><div class="screenLogoBar"><img src="IRON-CORE-logo-exact.png" alt="IRON-CORE"></div></div>
+    <h2>PERSONAL BODY PROFILE</h2>
+    <p>身体データを入力すると、AI COACHが個体差を考慮した提案を行います。</p>
+    <div class="formgrid">
+      <label>年齢<input class="field" id="age" type="number" min="10" max="100" placeholder="例：30"></label>
+      <label>性別<select class="field" id="sex"><option value="">選択</option><option>男性</option><option>女性</option></select></label>
+      <label>身長 (cm)<input class="field" id="height" type="number" step="0.1" placeholder="170"></label>
+      <label>体重 (kg)<input class="field" id="weight" type="number" step="0.1" placeholder="65"></label>
+      <label>腕周り (cm)<input class="field" id="arm" type="number" step="0.1" placeholder="32"></label>
+      <label>ウエスト (cm)<input class="field" id="waist" type="number" step="0.1" placeholder="75"></label>
+      <label>ヒップ (cm)<input class="field" id="hip" type="number" step="0.1" placeholder="90"></label>
+      <label>太もも (cm)<input class="field" id="thigh" type="number" step="0.1" placeholder="52"></label><label>筋肉量 (kg)<input class="field" id="muscleMass" type="number" step="0.1" placeholder="任意"></label><label>体脂肪率 (%)<input class="field" id="bodyFat" type="number" step="0.1" placeholder="任意"></label><label>活動量<select class="field" id="activity"><option value="1.2">低い</option><option value="1.375">やや低い</option><option value="1.55" selected>中程度</option><option value="1.725">高い</option></select></label>
+      <label>血圧 上 (mmHg)<input class="field" id="bpSys" type="number" placeholder="120"></label>
+      <label>血圧 下 (mmHg)<input class="field" id="bpDia" type="number" placeholder="80"></label>
+      <label style="grid-column:1/-1">目的<select class="field" id="goal"><option>筋肥大</option><option>減量</option><option>ボディメイク</option><option>筋力アップ</option><option>健康・体力維持</option></select></label>
+    </div>
+    <div class="actions"><button class="secondary" id="closeModal">キャンセル</button><button class="primary" id="saveProfile">登録してAI分析</button></div>
+  </div>
+</div>
+
+
+<!-- PERSONAL GUIDANCE SCREENS -->
+<section class="personalScreen" id="aiAnalysisScreen"><div class="personalInner"><div class="screenLogoBar"><img src="IRON-CORE-logo-exact.png" alt="IRON-CORE"></div><div class="personalHead"><b>AI ANALYSIS</b><small>PERSONAL BODY PROFILE // RESULT</small></div><div id="aiAnalysisBody"></div></div></section>
+<section class="personalScreen" id="nutritionScreen"><div class="personalInner"><div class="screenLogoBar"><img src="IRON-CORE-logo-exact.png" alt="IRON-CORE"></div><div class="personalHead"><b>NUTRITION MANAGEMENT</b><small>PERSONALIZED NUTRITION GUIDE</small></div><div id="nutritionBody"></div></div></section>
+<section class="personalScreen" id="weightScreen"><div class="personalInner"><div class="screenLogoBar"><img src="IRON-CORE-logo-exact.png" alt="IRON-CORE"></div><div class="personalHead"><b>WEIGHT MANAGEMENT</b><small>PERSONALIZED BODY COMPOSITION PLAN</small></div><div id="weightBody"></div></div></section>
+<section class="personalScreen" id="goalScreen"><div class="personalInner"><div class="screenLogoBar"><img src="IRON-CORE-logo-exact.png" alt="IRON-CORE"></div><div class="personalHead"><b>GOAL SETTING</b><small>PERSONALIZED TARGETS</small></div><div id="goalBody"></div></div></section>
+<section class="personalScreen" id="personalTrainingScreen"><div class="personalInner"><div class="screenLogoBar"><img src="IRON-CORE-logo-exact.png" alt="IRON-CORE"></div><div class="personalHead"><b>PERSONAL TRAINING</b><small>PERSONALIZED STARTING PLAN</small></div><div id="personalTrainingBody"></div></div></section>
+<section class="settingsScreen" id="settingsScreen" aria-label="設定">
+  <div class="settingsInner">
+    <div class="screenLogoBar"><img src="IRON-CORE-logo-exact.png" alt="IRON-CORE"></div>
+    <div class="settingsBanner"><img src="settings-banner.png" alt="設定 SETTINGS"></div>
+    <div class="settingsHead"><b>SETTINGS</b><small>APP CONTROL // TRAINING PREFERENCES</small></div>
+
+    <div class="settingsGroup settingsDanger">
+      <h3>DATA RESET // AI COACH</h3>
+      <div class="settingsItem">
+        <div class="settingsIcon realIcon"><img src="settings-ai-icon.png" alt="" aria-hidden="true"></div>
+        <div class="settingsItemText"><b>AI COACH登録データをリセット</b><small class="settingsResetDesc">現在のAI COACHは身体データを基に生成されるため、登録プロフィールも初期化されます。</small></div>
+        <button class="settingsBtn" id="resetAiCoach" type="button">RESET</button>
+      </div>
+    </div>
+
+    <div class="settingsGroup settingsDanger">
+      <h3>DATA RESET // BODY PROFILE</h3>
+      <div class="settingsItem">
+        <div class="settingsIcon realIcon"><img src="settings-body-icon.png" alt="" aria-hidden="true"></div>
+        <div class="settingsItemText"><b>身体データをリセット</b><small class="settingsResetDesc">年齢・身長・体重・各部位サイズ・血圧・目的などの登録データを削除し、初期状態に戻します。</small></div>
+        <button class="settingsBtn" id="resetBodyProfile" type="button">RESET</button>
+      </div>
+    </div>
+
+    <div class="settingsGroup">
+      <h3>PREFERENCES</h3>
+      <div class="settingsItem"><div class="settingsIcon realIcon"><img src="settings-weight-icon.png" alt="" aria-hidden="true"></div><div class="settingsItemText"><b>重量単位</b><small>Weight Unit</small></div><select class="settingsSelect" id="weightUnit"><option value="kg">KG</option><option value="lb">LB</option></select></div>
+      <div class="settingsItem"><div class="settingsIcon realIcon"><img src="settings-timer-icon.png" alt="" aria-hidden="true"></div><div class="settingsItemText"><b>休憩タイマー</b><small>Rest Timer</small></div><input class="settingsSwitch" id="restTimer" type="checkbox" checked></div>
+      <div class="settingsItem"><div class="settingsIcon realIcon"><img src="settings-save-icon.png" alt="" aria-hidden="true"></div><div class="settingsItemText"><b>記録の自動保存</b><small>Auto Save</small></div><input class="settingsSwitch" id="autoSave" type="checkbox" checked></div>
+      <div class="settingsItem"><div class="settingsIcon realIcon"><img src="settings-vibration-icon.png" alt="" aria-hidden="true"></div><div class="settingsItemText"><b>バイブレーション</b><small>Vibration</small></div><input class="settingsSwitch" id="vibration" type="checkbox" checked></div>
+      <div class="settingsItem"><div class="settingsIcon realIcon"><img src="settings-sound-icon.png" alt="" aria-hidden="true"></div><div class="settingsItemText"><b>サウンド</b><small>Sound Effects</small></div><input class="settingsSwitch" id="soundFx" type="checkbox" checked></div>
+      <div class="settingsItem"><div class="settingsIcon realIcon"><img src="settings-confirm-icon.png" alt="" aria-hidden="true"></div><div class="settingsItemText"><b>確認ダイアログ</b><small>Confirmation Dialogs</small></div><input class="settingsSwitch" id="confirmDialog" type="checkbox" checked></div>
+      <p class="settingsNote">設定値はこの端末のブラウザ内に保存されます。アプリ本体や既存のトレーニング機能は変更しません。</p>
+    </div>
+  </div>
+</section>
+<!-- TRAINING EXPLANATION SCREEN -->
+<section class="trainingScreen" id="trainingScreen" aria-label="トレーニング解説">
+  <div class="trainingScreenInner">
+    <div class="screenLogoBar"><img src="IRON-CORE-logo-exact.png" alt="IRON-CORE"></div>
+    <div class="trainingIntro">
+      <b>TRAINING EXPLANATION</b><small>ALL EXERCISES // MUSCLE GUIDE</small>
+      <p>人体モデルの部位をタップすると、その部位に関連する種目だけを呼び出して確認できます。下には全種目の詳細解説を収録しています。</p>
+    </div>
+    <div class="trainingStage" id="trainingStage">
+      <img class="trainingHologram" id="trainingHologram" src="hologram.png" alt="IRON-CORE FRONT">
+      <div class="trainingSwitch" aria-label="FRONT / BUCK"><button type="button" id="frontBtn" class="active">FRONT</button><button type="button" id="backBtn">BUCK</button></div>
+      <div class="muscleZoneLayer" id="frontZones"></div><div class="muscleZoneLayer" id="backZones" style="display:none"></div>
+    </div>
+    <div class="libraryHeader"><div><b>ALL EXERCISES</b><small> // COMPLETE TRAINING LIBRARY</small></div><span class="libraryCount" id="libraryCount">LOADING...</span></div>
+    <div class="exerciseLibrary" id="exerciseLibrary"></div>
+  </div>
+
+</section>
+<section class="exerciseDetails" id="exerciseDetails" aria-label="筋トレ種目詳細">
+    <div class="exerciseDetailsInner">
+      <div class="screenLogoBar"><img src="IRON-CORE-logo-exact.png" alt="IRON-CORE"></div>
+      <div class="exerciseDetailsHead"><button type="button" class="exerciseBack" id="exerciseBack" aria-label="戻る">‹</button><div class="exerciseDetailsHeadText"><b id="exerciseDetailsTitle">MUSCLE</b><small id="exerciseDetailsSubtitle">TRAINING EXPLANATION</small></div></div>
+      <div class="exerciseCards" id="exerciseCards"></div>
+    </div>
+</section>
+
+<script>
+const $=id=>document.getElementById(id);
+const modal=$("modal");
+
+// TRAINING EXPLANATION SCREEN + 60 EXERCISE LIBRARY
+const trainingScreen=$("trainingScreen");
+const trainingHologram=$("trainingHologram");
+const frontBtn=$("frontBtn");
+const backBtn=$("backBtn");
+const frontZones=$("frontZones");
+const backZones=$("backZones");
+const exerciseDetails=$("exerciseDetails");
+const exerciseCards=$("exerciseCards");
+const exerciseDetailsTitle=$("exerciseDetailsTitle");
+const exerciseDetailsSubtitle=$("exerciseDetailsSubtitle");
+const exerciseBack=$("exerciseBack");
+const exerciseLibrary=$("exerciseLibrary");
+const libraryCount=$("libraryCount");
+let exerciseData=[];
+
+// PERSONAL GUIDANCE SCREENS (used by hidePersonalScreens/goHome to close them)
+const personalScreens=[
+  $("aiAnalysisScreen"),
+  $("nutritionScreen"),
+  $("weightScreen"),
+  $("goalScreen"),
+  $("personalTrainingScreen"),
+  $("settingsScreen")
+];
+
+const muscleZones={
+  front:[
+    {key:"肩",x:31.7,y:22.0,r:9.6},{key:"胸",x:50.0,y:27.1,r:10.0},{key:"腹筋",x:50.0,y:34.5,r:9.0},{key:"上腕二頭筋",x:31.2,y:30.0,r:9.2},{key:"前腕筋群",x:23.0,y:36.7,r:7.4},{key:"手首",x:15.7,y:43.1,r:7.7,small:true},{key:"大腿四頭筋",x:38.7,y:50.2,r:9.6}
+  ],
+  back:[
+    {key:"僧帽筋",x:50.0,y:19.5,r:9.4},{key:"広背筋",x:32.5,y:26.4,r:9.5},{key:"脊柱起立筋",x:50.0,y:31.0,r:7.7,small:true},{key:"内転筋群",x:40.7,y:49.9,r:8.8},{key:"腓腹筋",x:33.7,y:65.7,r:8.0},{key:"ヒラメ筋",x:33.3,y:70.0,r:7.8}
+  ]
+};
+
+function goHome(){
+  // GLOBAL HOME — close every overlay first, then force the real home document to its top.
+  trainingScreen.classList.remove("show");
+  exerciseDetails.classList.remove("show");
+  modal.classList.remove("show");
+  hidePersonalScreens();
+
+  // Restore the document scrolling that is temporarily locked by full-screen views.
+  document.body.style.overflow="";
+  document.documentElement.style.overflow="";
+  document.body.style.position="";
+  document.body.style.height="";
+  document.documentElement.style.position="";
+  document.documentElement.style.height="";
+
+  // Reset every independent scroll container.
+  document.querySelectorAll(".trainingScreen, .exerciseDetails, .personalScreen, .modal, .sheet").forEach(el=>{
+    try{ el.scrollTop=0; }catch(_){}
+  });
+
+  const app=document.querySelector("main.app");
+  if(app){
+    app.style.display="";
+    app.style.visibility="";
+  }
+
+  // Android/WebView can restore the old scroll position after an overlay closes,
+  // so perform the HOME jump on the next two frames as well.
+  const forceHomeTop=()=>{
+    window.scrollTo({top:0,left:0,behavior:"auto"});
+    document.documentElement.scrollTop=0;
+    document.body.scrollTop=0;
+    if(app) app.scrollIntoView({block:"start",inline:"nearest",behavior:"auto"});
+    window.scrollTo(0,0);
+  };
+  forceHomeTop();
+  requestAnimationFrame(()=>{
+    forceHomeTop();
+    requestAnimationFrame(forceHomeTop);
+  });
+
+  // Keep HOME selected.
+  document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
+  document.getElementById("bottomHome")?.classList.add("active");
+
+  if(location.hash) history.replaceState(null,"",location.pathname+location.search);
+}
+
+function showTraining(){
+  trainingScreen.classList.add("show");
+  exerciseDetails.classList.remove("show");
+  document.body.style.overflow="hidden";
+  trainingScreen.style.overflowY="auto";
+  trainingScreen.scrollTop=0;
+  document.documentElement.scrollTop=0;
+  switchView("front");
+  history.pushState({ironCoreTraining:true},"","#training");
+  renderMuscleZones("front");
+  loadExercises().then(renderExerciseLibrary);
+}
+function hideTraining(){
+  trainingScreen.classList.remove("show");
+  exerciseDetails.classList.remove("show");
+  document.body.style.overflow="";
+}
+function renderMuscleZones(side){
+  const holder=side==="front"?frontZones:backZones; holder.innerHTML="";
+  muscleZones[side].forEach((z,i)=>{const b=document.createElement("div");b.className="muscleZone"+(z.small?" small":"");b.dataset.muscle=z.key;b.dataset.index=i;b.style.left=z.x+"%";b.style.top=z.y+"%";holder.appendChild(b);});
+}
+function pointToImagePercent(e,holder){const r=holder.getBoundingClientRect();return{x:(e.clientX-r.left)/r.width*100,y:(e.clientY-r.top)/r.height*100};}
+function handleZoneTap(e,side){if(e.target.closest(".trainingSwitch"))return;const holder=side==="front"?frontZones:backZones;const p=pointToImagePercent(e,holder);let best=null,bestDist=Infinity;muscleZones[side].forEach((z,i)=>{const dx=p.x-z.x,dy=p.y-z.y,d=Math.hypot(dx,dy);if(d<=z.r&&d<bestDist){best={...z,index:i};bestDist=d;}});if(best)openMuscleDetails(best.key);}
+frontZones.addEventListener("click",e=>handleZoneTap(e,"front"));backZones.addEventListener("click",e=>handleZoneTap(e,"back"));
+function switchView(side){const front=side==="front";trainingHologram.src=front?"hologram.png":"hologram_back.png";trainingHologram.alt=front?"IRON-CORE FRONT":"IRON-CORE BACK";frontBtn.classList.toggle("active",front);backBtn.classList.toggle("active",!front);frontZones.style.display=front?"block":"none";backZones.style.display=front?"none":"block";renderMuscleZones(side);}
+async function loadExercises(){
+  if(exerciseData.length)return exerciseData;
+  try{const res=await fetch("exercises.json",{cache:"no-store"});if(!res.ok)throw new Error("HTTP "+res.status);const raw=await res.json();exerciseData=Array.isArray(raw)?raw:(raw.exercises||[]);}catch(err){exerciseData=[];}
+  return exerciseData;
+}
+function escapeHtml(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));}
+function isBodyweight(ex){return String(ex.equipment||"").includes("自重");}
+function makeNgText(ex){const tips=(ex.tips||[]).filter(Boolean);if(!tips.length)return "無理に重量や可動域を増やさず、痛みやフォーム崩れが出た場合は中止してください。";return tips.map(t=>`「${t}」を無視して動作を続けない`).join("。 ")+"。";}
+function renderLibraryCard(ex,index){
+  const instructions=(ex.instructions||[]).map(x=>`<li>${escapeHtml(x)}</li>`).join("");
+  const tips=(ex.tips||[]).map(x=>`<li>${escapeHtml(x)}</li>`).join("");
+  const basic=ex.basic_method||"";
+  const badge=isBodyweight(ex)?'<span class="bodyweightBadge">自重</span>':'';
+  return `<article class="libraryCard"><div class="num">EXERCISE ${String(index+1).padStart(2,"0")}</div><h3>${escapeHtml(ex.name)}${badge}</h3><div class="en">${escapeHtml(ex.name_en||"")}</div><div class="libraryMeta"><span>部位：${escapeHtml(ex.category||"")}</span><span>器具：${escapeHtml(ex.equipment||"")}</span><span>${escapeHtml(ex.type||"")}</span></div><h4>概要</h4><p>${escapeHtml(ex.description||"")}</p>${basic?`<h4>基本的なやり方</h4><p>${escapeHtml(basic)}</p>`:""}${ex.correct_method?`<h4>正しいやり方</h4><p>${escapeHtml(ex.correct_method)}</p>`:(instructions?`<h4>正しいやり方</h4><ol>${instructions}</ol>`:"")}${tips?`<h4>ポイント・コツ</h4><ol>${tips}</ol>`:""}<div class="ngBox"><b>NG / 注意</b><p>${escapeHtml(ex.ng_notes||makeNgText(ex))}</p></div></article>`;
+}
+function renderExerciseLibrary(data){libraryCount.textContent=`${data.length} / ${exerciseData.length||61} EXERCISES`;exerciseLibrary.innerHTML=data.map(renderLibraryCard).join("");}
+function muscleMatches(ex,muscle){const all=[...(ex.target_muscles||[]),...(ex.secondary_muscles||[])];const aliases={"肩":["肩","三角筋","三角筋前部","三角筋中部","三角筋後部","肩周辺"],"胸":["胸","大胸筋","大胸筋上部"],"腹筋":["腹筋","腹","腹直筋","腹斜筋","腹横筋","体幹"],"上腕二頭筋":["上腕二頭筋"],"上腕三頭筋":["上腕三頭筋"],"大腿四頭筋":["大腿四頭筋"],"前腕筋群":["前腕筋群","前腕屈筋群","前腕伸筋群","腕橈骨筋","前腕"],"手首":["前腕","前腕筋群","前腕屈筋群","前腕伸筋群","腕橈骨筋"],"僧帽筋":["僧帽筋"],"広背筋":["広背筋"],"脊柱起立筋":["脊柱起立筋"],"内転筋群":["内転筋群","内転筋"],"ヒラメ筋":["ヒラメ筋"],"腓腹筋":["腓腹筋"]};const wanted=aliases[muscle]||[muscle];return wanted.some(a=>all.includes(a)) || wanted.includes(ex.category);}
+function renderExerciseCard(ex){const instructions=(ex.instructions||[]).map(x=>`<li>${escapeHtml(x)}</li>`).join("");const tips=(ex.tips||[]).map(x=>`<li>${escapeHtml(x)}</li>`).join("");const targets=(ex.target_muscles||[]).join(" / ");const secondary=(ex.secondary_muscles||[]).join(" / ");const basic=ex.basic_method||"";const badge=isBodyweight(ex)?'<span class="bodyweightBadge">自重</span>':'';return `<article class="exerciseCard"><h3>${escapeHtml(ex.name)}${badge}</h3><div class="en">${escapeHtml(ex.name_en||"")}</div><div class="exerciseMeta"><span>部位：${escapeHtml(ex.category||"")}</span><span>器具：${escapeHtml(ex.equipment||"")}</span><span>タイプ：${escapeHtml(ex.type||"")}</span></div><h4>TARGET MUSCLES</h4><p>${escapeHtml(targets)}</p>${secondary?`<h4>SECONDARY</h4><p>${escapeHtml(secondary)}</p>`:""}<h4>説明</h4><p>${escapeHtml(ex.description||"")}</p>${basic?`<h4>基本的なやり方</h4><p>${escapeHtml(basic)}</p>`:""}${instructions?`<h4>正しいやり方</h4><ol>${instructions}</ol>`:""}${tips?`<h4>ポイント・コツ</h4><ol>${tips}</ol>`:""}<div class="ngBox"><b>NG / 注意</b><p>${escapeHtml(makeNgText(ex))}</p></div></article>`;}
+async function openMuscleDetails(muscle){
+  const data=await loadExercises();
+  const matched=data.filter(ex=>muscleMatches(ex,muscle));
+  exerciseDetailsTitle.textContent=muscle;
+  exerciseDetailsSubtitle.textContent=`${matched.length} EXERCISE${matched.length===1?"":"S"} // TRAINING EXPLANATION`;
+  exerciseCards.innerHTML=matched.length?matched.map(renderExerciseCard).join(""):`<div class="exerciseEmpty">${escapeHtml(muscle)} に関連する種目データがまだありません。</div>`;
+  // Explanation is a completely separate screen: hide the hologram screen first.
+  trainingScreen.classList.remove("show");
+  exerciseDetails.classList.add("show");
+  exerciseDetails.scrollTop=0;
+  exerciseDetails.style.overflowY="auto";
+  document.body.style.overflow="hidden";
+  requestAnimationFrame(()=>exerciseDetails.scrollTop=0);
+}
+frontBtn.addEventListener("click",()=>switchView("front"));
+backBtn.addEventListener("click",()=>switchView("back"));
+exerciseBack.addEventListener("click",()=>{
+  exerciseDetails.classList.remove("show");
+  trainingScreen.classList.add("show");
+  document.body.style.overflow="hidden";
+});
+
+// The logo is a global HOME button on every screen.
+document.querySelector(".brandLogoWrap")?.addEventListener("click",goHome);
+document.querySelectorAll(".trainingScreen .screenLogoBar, .exerciseDetails .screenLogoBar").forEach(bar=>bar.addEventListener("click",goHome));
+document.querySelectorAll(".screenLogoBar").forEach(bar=>bar.addEventListener("click",goHome));$("openTrainingGuide").addEventListener("click",showTraining);window.addEventListener("popstate",()=>{
+  if(exerciseDetails.classList.contains("show")){
+    exerciseDetails.classList.remove("show");
+    trainingScreen.classList.add("show");
+    document.body.style.overflow="hidden";
+    return;
+  }
+  if(trainingScreen.classList.contains("show"))hideTraining();
+  hidePersonalScreens();
+});
+
+
+function showSettings(){
+  hidePersonalScreens();
+  $("settingsScreen")?.classList.add("show");
+  if($("settingsScreen")){$("settingsScreen").scrollTop=0;$("settingsScreen").style.overflowY="auto";}
+  document.body.style.overflow="hidden";
+  window.scrollTo(0,0);
+  loadSettings();
+  history.pushState({ironCoreSettings:true},"","#settings");
+}
+function loadSettings(){
+  const d=(()=>{try{return JSON.parse(localStorage.getItem("ironCoreSettings")||"{}")}catch(e){return {}}})();
+  ["restTimer","autoSave","vibration","soundFx","confirmDialog"].forEach(id=>{const el=$(id);if(el)el.checked=d[id]!==false;});
+  if($("weightUnit"))$("weightUnit").value=d.weightUnit||"kg";
+}
+function saveSettings(){
+  const d={weightUnit:$("weightUnit")?.value||"kg",restTimer:$("restTimer")?.checked!==false,autoSave:$("autoSave")?.checked!==false,vibration:$("vibration")?.checked!==false,soundFx:$("soundFx")?.checked!==false,confirmDialog:$("confirmDialog")?.checked!==false};
+  localStorage.setItem("ironCoreSettings",JSON.stringify(d));
+}
+function resetProfileData(){
+  localStorage.removeItem("ironCoreProfile");
+  $("coachTitle").textContent="AI COACH // READY";
+  $("coachStatus").textContent="PROFILE REQUIRED";
+  $("coachAdvice").textContent="身体データを登録すると、年齢・性別・身長・体重・各部位サイズ・血圧・目標などを基に、あなた専用のトレーニング方針を生成します。";
+  $("coachPills").innerHTML='<span class="pill">PERSONALIZED</span><span class="pill">DATA DRIVEN</span><span class="pill">GOAL BASED</span>';
+}
+function confirmReset(label){
+  const useConfirm=$("confirmDialog")?.checked!==false;
+  return !useConfirm || window.confirm(`「${label}」を削除しますか？\\nこの操作は元に戻せません。`);
+}
+function getProfile(){try{return JSON.parse(localStorage.getItem("ironCoreProfile")||"null")}catch(e){return null}}
+function calcPersonal(p){
+ const age=Number(p.age||30),h=Number(p.height||170),w=Number(p.weight||65),activity=Number(p.activity||1.55); const bmi=h&&w?w/((h/100)**2):null; const sex=p.sex||"男性";
+ const bmr=sex==="女性"?(10*w+6.25*h-5*age-161):(10*w+6.25*h-5*age+5); let calories=bmr*activity; const goal=p.goal||"健康・体力維持";
+ if(goal==="減量")calories-=300; else if(goal==="筋肥大")calories+=250; else if(goal==="ボディメイク")calories+=50;
+ const protein=(goal==="減量"?1.8:goal==="筋肥大"||goal==="筋力アップ"?1.7:1.5)*w; const fat=.8*w; const carbs=Math.max(0,(calories-protein*4-fat*9)/4);
+ const bmiText=bmi?bmi.toFixed(1):"—"; const bmiAdvice=bmi===null?"身長と体重を入力するとBMI目安を算出します。":bmi<18.5?"体重が少なめの範囲です。減量を急がず、食事量と筋力の変化を見ながら進めます。":bmi<25?"BMIは一般的な目安の範囲です。体重だけでなく筋肉量・体脂肪率・ウエストの変化も確認します。":bmi<30?"BMIは高めの目安です。減量目的なら急激な制限を避け、筋力を維持しながら段階的に進めます。":"BMIはかなり高めの目安です。体重だけで判断せず、運動強度や食事変更は無理のない範囲で進めます。";
+ let targetWeight=w;if(goal==="減量")targetWeight=w*.95;else if(goal==="筋肥大")targetWeight=w*1.03;return{age,h,w,activity,bmi,bmiText,bmr,calories,protein,fat,carbs,goal,sex,bmiAdvice,targetWeight,muscleMass:Number(p.muscleMass||0),bodyFat:Number(p.bodyFat||0)};
+}
+function hidePersonalScreens(){personalScreens.forEach(s=>s?.classList.remove("show"));}
+function showPersonal(id){hidePersonalScreens();const s=$(id);s?.classList.add("show");if(s){s.style.overflowY="auto";s.scrollTop=0;}document.body.style.overflow="hidden";window.scrollTo(0,0);}
+function renderAnalysis(){const p=getProfile();if(!p)return;const c=calcPersonal(p);$("aiAnalysisBody").innerHTML=`<div class="personalCard"><h3>PROFILE ANALYSIS</h3><div class="metricGrid"><div class="metric"><small>BMI</small><strong>${c.bmiText}</strong></div><div class="metric"><small>GOAL</small><strong>${escapeHtml(c.goal)}</strong></div><div class="metric"><small>WEIGHT</small><strong>${c.w} kg</strong></div><div class="metric"><small>MUSCLE MASS</small><strong>${c.muscleMass?c.muscleMass+" kg":"未登録"}</strong></div></div><p style="margin-top:10px">${escapeHtml(c.bmiAdvice)}</p></div><div class="personalCard"><h3>AI COACH SUMMARY</h3><p>${escapeHtml(c.sex)}・${c.age}歳・${c.h}cm・${c.w}kg・目的「${c.goal}」を基準に、負荷と回復量を個別調整します。筋肉量・体脂肪率が未登録なら、体重だけで断定せず、記録が増えるほど提案を更新します。</p><div class="personalNote">※数値は一般的な目安です。血圧値や持病などがある場合は、運動・食事変更を医療専門家に確認してください。</div></div>`;showPersonal("aiAnalysisScreen")}
+function renderNutrition(){const p=getProfile(),host=$("nutritionBody");if(!p){host.innerHTML='<div class="personalCard"><p>先に身体データを登録してください。</p></div>';showPersonal("nutritionScreen");return}const c=calcPersonal(p);let strategy=c.goal==="減量"?"総摂取量を緩やかに調整し、各食にタンパク質源を置きます。主食・脂質・間食を一度に極端に削らず、野菜・水分・食物繊維も確保します。":c.goal==="筋肥大"?"毎食にタンパク質源を置き、トレーニング前後の主食を確保します。2〜3週間の体重と筋力の変化を見て少しずつ調整します。":c.goal==="筋力アップ"?"トレーニング前後の炭水化物と十分なタンパク質を確保し、体重を急に増減させずパフォーマンスを優先します。":c.goal==="ボディメイク"?"タンパク質を確保しながら総カロリーを微調整し、体重・ウエスト・筋力をセットで追跡します。":"主食・主菜・副菜を基本に、極端な制限を避けて継続できる食事を優先します。";host.innerHTML=`<div class="personalCard"><h3>DAILY GUIDE</h3><div class="metricGrid"><div class="metric"><small>CALORIES</small><strong>${Math.round(c.calories)} kcal</strong></div><div class="metric"><small>PROTEIN</small><strong>${Math.round(c.protein)} g</strong></div><div class="metric"><small>CARBOHYDRATE</small><strong>${Math.round(c.carbs)} g</strong></div><div class="metric"><small>FAT</small><strong>${Math.round(c.fat)} g</strong></div></div></div><div class="personalCard"><h3>${escapeHtml(c.goal)} // FOOD STRATEGY</h3><p>${strategy}</p><div class="personalNote">PFCは推定値です。糖質を完全に抜くなどの極端な制限は前提にせず、実際の体重推移と食事記録で調整します。</div></div>`;showPersonal("nutritionScreen")}
+function renderWeight(){const p=getProfile(),host=$("weightBody");if(!p){host.innerHTML='<div class="personalCard"><p>先に身体データを登録してください。</p></div>';showPersonal("weightScreen");return}const c=calcPersonal(p),delta=c.targetWeight-c.w;let plan=c.goal==="減量"?"急激な減量ではなく、週平均体重を見ながら小さく調整。筋力低下や疲労が強い場合はペースを落とします。":c.goal==="筋肥大"?"体重を少しずつ増やしながら主要種目の回数・重量の伸びを確認し、脂肪の増加が大きければ摂取量を微調整します。":"体重だけで成功判定せず、ウエスト・体脂肪率・筋力の変化も合わせて追跡します。";host.innerHTML=`<div class="personalCard"><h3>BODY COMPOSITION</h3><div class="metricGrid"><div class="metric"><small>CURRENT</small><strong>${c.w} kg</strong></div><div class="metric"><small>GUIDE TARGET</small><strong>${c.targetWeight.toFixed(1)} kg</strong></div><div class="metric"><small>CHANGE</small><strong>${delta>=0?"+":""}${delta.toFixed(1)} kg</strong></div><div class="metric"><small>BMI</small><strong>${c.bmiText}</strong></div></div></div><div class="personalCard"><h3>PERSONAL PLAN</h3><p>${plan}</p></div>`;showPersonal("weightScreen")}
+function renderGoal(){const p=getProfile(),host=$("goalBody");if(!p){host.innerHTML='<div class="personalCard"><p>先に身体データを登録してください。</p></div>';showPersonal("goalScreen");return}const c=calcPersonal(p);host.innerHTML=`<div class="personalCard"><h3>RECOMMENDED TARGETS</h3><ul class="recommendList"><li>短期：${c.goal==="減量"?"食事と活動量を安定させ、週平均体重を確認":"無理なく継続できる運動習慣と記録を作る"}</li><li>中期：体重・ウエスト・筋力・体脂肪率（入力時）を同時に追跡</li><li>行動目標：週2〜4回を目安に、疲労に合わせて休養日を確保</li></ul></div><div class="personalCard"><h3>PERSONAL TARGET</h3><p>${c.muscleMass?"筋肉量「"+c.muscleMass+"kg」も基準にして身体組成の変化を追跡します。":"筋肉量を登録すると、より個体差を反映した目標調整ができます。"} ${c.bodyFat?"体脂肪率「"+c.bodyFat+"%」も併用します。":""}</p></div>`;showPersonal("goalScreen")}
+async function renderPersonalTraining(){const p=getProfile(),host=$("personalTrainingBody");if(!p){host.innerHTML='<div class="personalCard"><p>先に身体データを登録してください。</p></div>';showPersonal("personalTrainingScreen");return}const c=calcPersonal(p),data=await loadExercises();let suitable=data.filter(x=>x.equipment==="自重"||x.level==="初級").slice(0,6);if(c.goal==="筋力アップ"||c.goal==="筋肥大")suitable=data.filter(x=>x.level!=="上級").slice(0,6);const items=suitable.map((x,i)=>`<li><b>${i+1}. ${escapeHtml(x.name)}</b> — ${escapeHtml(x.category||"")} / ${escapeHtml(x.equipment||"")}<br>開始目安：${x.equipment==="自重"?"自重でフォーム確認":"軽めの重量から開始し、あと3〜4回できる余裕を残す"}。10〜12回×2〜3セットを基準に、フォームが安定したら少しずつ増やします。</li>`).join("");host.innerHTML=`<div class="personalCard"><h3>STARTING PLAN</h3><p>${escapeHtml(c.goal)}を目的に、${c.w}kg・BMI ${c.bmiText}・${escapeHtml(c.sex)}・${c.age}歳を基準に、まずフォームを安定させる順番を提案します。</p></div><div class="personalCard"><h3>RECOMMENDED EXERCISES</h3><ol class="recommendList">${items}</ol><div class="personalNote">重量は体重だけから一律に決めず、現在の筋力・経験・前回記録を優先します。痛みがある動作は中止してください。</div></div>`;showPersonal("personalTrainingScreen")}
+function openModal(){modal.classList.add("show");modal.scrollTop=0;requestAnimationFrame(()=>{modal.scrollTop=0;const s=modal.querySelector(".sheet");if(s)s.scrollTop=0;});}
+function closeModal(){modal.classList.remove("show")}
+$("openProfile").onclick=openModal;
+$("openCoach").onclick=openModal;
+$("closeModal").onclick=closeModal;
+modal.addEventListener("click",e=>{if(e.target===modal)closeModal()});
+
+function updateCoach(p){
+  if(!p){return}
+  const bmi=p.height&&p.weight ? p.weight/((p.height/100)**2) : null;
+  let advice=`${p.goal}を目的として、現在の身体データを基準にトレーニング負荷と回復量を個別最適化します。`;
+  if(bmi){
+    advice+=` BMI目安は ${bmi.toFixed(1)}。体重だけで判断せず、各部位サイズとトレーニング履歴を組み合わせて変化を追跡します。`;
+  }
+  if(p.bpSys&&p.bpDia && (p.bpSys>=140 || p.bpDia>=90)){
+    advice+=" 血圧値が高めに入力されています。運動強度については医療専門家への相談を優先してください。";
+  }
+  $("coachTitle").textContent="AI COACH // PERSONALIZED";
+  $("coachStatus").textContent="PROFILE ACTIVE";
+  $("coachAdvice").textContent=advice;
+  $("coachPills").innerHTML=`<span class="pill">${p.goal}</span><span class="pill">${p.weight||"--"} KG</span><span class="pill">${p.age||"--"} Y/O</span>`;
+}
+$("saveProfile").onclick=()=>{
+  const p={age:$("age").value,sex:$("sex").value,height:$("height").value,weight:$("weight").value,arm:$("arm").value,waist:$("waist").value,hip:$("hip").value,thigh:$("thigh").value,muscleMass:$("muscleMass").value,bodyFat:$("bodyFat").value,activity:$("activity").value,bpSys:$("bpSys").value,bpDia:$("bpDia").value,goal:$("goal").value};
+  localStorage.setItem("ironCoreProfile",JSON.stringify(p)); updateCoach(p); closeModal(); renderAnalysis();
+};
+
+$("openSettings")?.addEventListener("click",showSettings);
+["restTimer","autoSave","vibration","soundFx","confirmDialog"].forEach(id=>$(id)?.addEventListener("change",saveSettings));
+$("weightUnit")?.addEventListener("change",saveSettings);
+$("resetAiCoach")?.addEventListener("click",()=>{
+  if(confirmReset("AI COACH登録データ")){resetProfileData();alert("AI COACH登録データをリセットしました。");}
+});
+$("resetBodyProfile")?.addEventListener("click",()=>{
+  if(confirmReset("身体データ")){resetProfileData();alert("身体データをリセットしました。");}
+});
+$("bottomHome")?.addEventListener("click",goHome);
+$("openNutrition")?.addEventListener("click",renderNutrition);
+$("openWeight")?.addEventListener("click",renderWeight);
+$("openGoal")?.addEventListener("click",renderGoal);
+$("openTraining")?.addEventListener("click",renderPersonalTraining);
+document.querySelectorAll(".personalScreen .screenLogoBar").forEach(bar=>bar.addEventListener("click",goHome));
+
+try{const p=JSON.parse(localStorage.getItem("ironCoreProfile")); if(p) updateCoach(p)}catch(e){}
+
+// FINAL NAV SAFETY: capture clicks so HOME works even while a full-screen view is open.
+document.addEventListener("click",function(e){
+  const home=e.target.closest("#bottomHome");
+  if(home){ e.preventDefault(); e.stopPropagation(); goHome(); }
+},true);
+
+// Every visible screen-logo is a HOME button; use capture to avoid overlay interception.
+document.addEventListener("click",function(e){
+  const logo=e.target.closest(".screenLogoBar, .brandLogoWrap");
+  if(logo){ e.preventDefault(); e.stopPropagation(); goHome(); }
+},true);
+</script>
+</body>
+</html>
